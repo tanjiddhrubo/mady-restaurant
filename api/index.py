@@ -1,11 +1,15 @@
-import sys
+import os, sys
 from os.path import dirname, abspath
+
+# ABSOLUTE FIRST STEP: Fix the path so 'from app...' always works on Vercel
+root_path = dirname(abspath(__file__))
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
+
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
-
-# Ensure the 'api' directory is in sys.path so 'from app...' works
-sys.path.append(dirname(abspath(__file__)))
+import uuid
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware

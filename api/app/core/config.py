@@ -9,6 +9,13 @@ class Settings(BaseSettings):
 
     # Ensure SQLite path is relative to the 'api' folder for Vercel
     DATABASE_URL: str = f"sqlite:///{os.path.join(API_DIR, 'mady.db')}"
+
+    def get_db_url(self) -> str:
+        # SQLAlchemy requires 'postgresql://', but Supabase/Heroku often give 'postgres://'
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        return url
     CORS_ORIGINS: list[str] = ["*"]
     APP_NAME: str = "Mady Restaurant API"
     DEBUG: bool = True
