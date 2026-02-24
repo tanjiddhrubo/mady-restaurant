@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu Management — Mady Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15", dark: "#0f172a" },
+          fontFamily: { sans: ["Outfit", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+    /* Drop Zone Glow */
+    .drop-zone.drag-over { border-color: #ea2a33; background-color: rgba(234, 42, 51, 0.05); }
+
+    /* Glassmorphism */
+    .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+    
+    /* Animations */
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR MOUNT -->
+  <div id="admin-sidebar-root"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- TOP NAVBAR -->
+    <header class="h-20 glass sticky top-0 z-40 flex items-center justify-between px-10 border-b border-slate-200">
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Menu Manager</h1>
+        <p class="text-xs text-slate-400 font-medium uppercase tracking-widest mt-0.5">Control your store availability</p>
+      </div>
+      
+      <div class="flex items-center gap-6">
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+          <input id="dish-search" 
+                 class="pl-12 pr-6 py-3 bg-slate-100 border-none rounded-2xl text-sm w-80 focus:ring-2 focus:ring-primary focus:bg-white transition-all shadow-sm group-hover:shadow-md" 
+                 placeholder="Search by name, description..." type="text"/>
+        </div>
+        
+        <button id="add-dish-trigger" 
+                class="bg-primary hover:bg-red-600 text-white font-bold px-6 py-3 rounded-2xl flex items-center gap-3 transition-all shadow-lg hover:shadow-primary/30 active:scale-95">
+          <span class="material-symbols-outlined font-bold">add_circle</span>
+          <span>Add New Dish</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT SCROLL AREA -->
+    <div class="flex-1 overflow-y-auto p-10">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- DASHBOARD STATS / FILTERS -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div class="flex items-center gap-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined">restaurant</span>
+              </div>
+              <div>
+                <p id="total-count-label" class="text-lg font-black leading-none">0</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Total Items</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-400">Sort by</span>
+            <select id="dish-sort" class="bg-white border-slate-200 rounded-xl text-sm font-bold focus:ring-primary focus:border-primary px-4 py-2 shadow-sm cursor-pointer">
+              <option value="newest">Latest Added</option>
+              <option value="name">Name (A-Z)</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating">Best Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- GRID LAYOUT -->
+        <div id="dish-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <!-- skeleton loaders or empty state will go here -->
+          <div class="col-span-full py-20 flex flex-col items-center justify-center text-slate-300">
+            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-4xl">cloud_download</span>
+            </div>
+            <p class="font-bold text-lg">Fetching your menu...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       ADD DISH MODAL
+       ============================================================ -->
+  <div id="add-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-6" style="display:none;">
+    <div id="add-modal-card" class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden animate-slide-up" style="max-height: 90vh;">
+      <div class="px-10 py-8 border-b border-slate-100 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-2xl font-black text-slate-900">Add New Dish</h2>
+          <p class="text-sm text-slate-400 mt-1">Fill in the details to expand your menu.</p>
+        </div>
+        <button id="add-modal-close" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-slate-300 hover:text-slate-600 transition-colors">close</span>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto flex-1 p-10">
+        <form id="add-form" class="space-y-8">
+          <!-- PHOTO UPLOAD -->
+          <div class="space-y-3">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Dish Portrait</span>
+            <div id="add-uploader-box" class="drop-zone relative border-4 border-dashed border-slate-100 rounded-3xl bg-slate-50 hover:bg-white hover:border-primary/30 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <img id="add-preview-img" class="hidden absolute inset-0 w-full h-full object-cover" alt="preview"/>
+              
+              <div id="add-upload-ui" class="flex flex-col items-center gap-4 text-center pointer-events-none">
+                <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-400">
+                  <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
+                </div>
+                <div>
+                  <p class="font-bold text-slate-700">Drag & drop or click</p>
+                  <p class="text-xs text-slate-400 mt-1">PNG, JPG, WEBP, JFIF up to 10MB</p>
+                </div>
+              </div>
+
+              <!-- Spinner -->
+              <div id="add-upload-loader" class="hidden absolute inset-0 bg-white/90 flex items-center justify-center z-10" style="display:none;">
+                <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              
+              <!-- Hidden input -->
+              <input type="file" id="add-file-input" class="hidden" accept="image/*" style="display:none;"/>
+            </div>
+            <input type="hidden" id="add-image-url" name="image_url"/>
+            <button type="button" id="add-remove-photo" class="hidden text-xs font-black text-primary hover:underline" style="display:none;">Remove Photo</button>
+            <p id="add-upload-error" class="hidden text-xs font-bold text-red-500" style="display:none;"></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-8">
+            <div class="space-y-2 flex flex-col">
+              <span class="text-xs font-black uppercase tracking-widest text-slate-500">Dish Name <span class="text-primary">*</span></span>
+              <input name="name" required class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium" placeholder="e.g. Signature Truffle Burger"/>
+            </div>
+            <div class="space-y-2 flex flex-col">
+              <span class="text-xs font-black uppercase tracking-widest text-slate-500">Price ($) <span class="text-primary">*</span></span>
+              <input name="price" type="number" step="0.01" required class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium" placeholder="18.50"/>
+            </div>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Category</span>
+            <select name="category_id" id="add-category-select" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium cursor-pointer">
+              <option value="">Uncategorized</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Description</span>
+            <textarea name="description" rows="3" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium resize-none" placeholder="Tell your customers what makes this dish special..."></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="flex items-center justify-between bg-slate-50 p-6 rounded-3xl">
+              <div>
+                <p class="font-bold text-slate-900 text-sm">Availability</p>
+                <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-tight">Show to customers</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_available" id="add-available" class="sr-only peer" checked>
+                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 p-6 rounded-3xl">
+              <div>
+                <p class="font-bold text-slate-900 text-sm">Featured</p>
+                <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-tight">Hero section</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_featured" id="add-featured" class="sr-only peer">
+                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="pt-6">
+            <button type="submit" id="add-submit-btn" 
+                    class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-3xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3">
+              <span class="material-symbols-outlined">add_task</span>
+              <span>Confirm & Add to Menu</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       EDIT DISH MODAL
+       ============================================================ -->
+  <div id="edit-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-6" style="display:none;">
+    <div id="edit-modal-card" class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden animate-slide-up" style="max-height: 90vh;">
+      <div class="px-10 py-8 border-b border-slate-100 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-2xl font-black text-slate-900">Update Dish</h2>
+          <p id="edit-item-summary" class="text-sm text-slate-400 mt-1">Adjusting details for...</p>
+        </div>
+        <button id="edit-modal-close" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-slate-300 hover:text-slate-600 transition-colors">close</span>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto flex-1 p-10">
+        <form id="edit-form" class="space-y-8">
+          <input type="hidden" name="id" id="edit-item-id"/>
+          
+          <!-- PHOTO UPLOAD -->
+          <div class="space-y-3">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Edit Portrait</span>
+            <div id="edit-uploader-box" class="drop-zone relative border-4 border-dashed border-slate-100 rounded-3xl bg-slate-50 hover:bg-white hover:border-primary/30 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <img id="edit-preview-img" class="hidden absolute inset-0 w-full h-full object-cover" alt="preview"/>
+              
+              <div id="edit-upload-ui" class="flex flex-col items-center gap-4 text-center pointer-events-none">
+                <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-400">
+                  <span class="material-symbols-outlined text-3xl">edit_square</span>
+                </div>
+                <div>
+                  <p class="font-bold text-slate-700">Change image</p>
+                </div>
+              </div>
+
+              <!-- Spinner -->
+              <div id="edit-upload-loader" class="hidden absolute inset-0 bg-white/90 flex items-center justify-center z-10" style="display:none;">
+                <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              
+              <!-- Hidden input -->
+              <input type="file" id="edit-file-input" class="hidden" accept="image/*" style="display:none;"/>
+            </div>
+            <input type="hidden" id="edit-image-url" name="image_url"/>
+            <p id="edit-upload-error" class="hidden text-xs font-bold text-red-500" style="display:none;"></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-8">
+            <div class="space-y-2 flex flex-col">
+              <span class="text-xs font-black uppercase tracking-widest text-slate-500">Dish Name <span class="text-primary">*</span></span>
+              <input name="name" id="edit-name" required class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium"/>
+            </div>
+            <div class="space-y-2 flex flex-col">
+              <span class="text-xs font-black uppercase tracking-widest text-slate-500">Price ($) <span class="text-primary">*</span></span>
+              <input name="price" id="edit-price" type="number" step="0.01" required class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium"/>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="flex items-center justify-between bg-slate-50 p-6 rounded-3xl">
+              <div>
+                <p class="font-bold text-slate-900 text-sm">Availability</p>
+                <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-tight">Show to customers</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_available" id="edit-available" class="sr-only peer" checked>
+                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 p-6 rounded-3xl">
+              <div>
+                <p class="font-bold text-slate-900 text-sm">Featured</p>
+                <p class="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-tight">Hero section</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_featured" id="edit-featured" class="sr-only peer">
+                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Category</span>
+            <select name="category_id" id="edit-category-select" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium cursor-pointer">
+              <option value="">Uncategorized</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">Description</span>
+            <textarea name="description" id="edit-description" rows="3" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium resize-none"></textarea>
+          </div>
+
+          <div class="pt-6 flex gap-4">
+            <button type="button" id="delete-btn-trigger" class="flex-1 bg-white border-2 border-slate-100 hover:border-red-100 hover:bg-red-50 text-red-500 font-bold py-5 rounded-3xl transition-all flex items-center justify-center gap-3 active:scale-95">
+              <span class="material-symbols-outlined">delete_forever</span>
+              <span>Remove Dish</span>
+            </button>
+            <button type="submit" id="edit-submit-btn" 
+                    class="flex-[2] bg-primary hover:bg-red-600 text-white font-black py-5 rounded-3xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3">
+              <span class="material-symbols-outlined">save</span>
+              <span>Keep Changes</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOASTS / GLOBAL NOTIFICATIONS
+       ============================================================ -->
+  <div id="global-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] transform transition-all duration-500 translate-y-20 opacity-0 pointer-events-none">
+    <div class="bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-4">
+      <span id="toast-icon" class="material-symbols-outlined text-primary">check_circle</span>
+      <p id="toast-msg" class="text-sm font-bold truncate max-w-xs"></p>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION -->
+  <div id="delete-confirm-overlay" class="fixed inset-0 z-[300] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6" style="display:none;">
+    <div class="bg-white rounded-[40px] shadow-2xl p-12 max-w-md w-full text-center animate-slide-up">
+      <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="material-symbols-outlined text-4xl">warning</span>
+      </div>
+      <h3 class="text-2xl font-black text-slate-900 mb-2">Are you sure?</h3>
+      <p class="text-slate-400 font-medium mb-10">You are about to permanently delete <span id="delete-target-name" class="text-slate-900 font-bold"></span>.</p>
+      
+      <div class="flex flex-col gap-3">
+        <button id="delete-confirm-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-5 rounded-3xl shadow-lg transition-all active:scale-95">Yes, Delete Forever</button>
+        <button id="delete-cancel-btn" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold py-5 rounded-3xl transition-all active:scale-95">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM SCRIPTS -->
+  <script type="module" src="../js/admin/sidebar.js"></script>
+  <script type="module">
+    import { api } from '../js/api.js';
+
+    // ============================================================
+    // STATE & CONFIG
+    // ============================================================
+    const API = window.location.origin;
+    let allItems = [];
+    let categories = [];
+    let currentDeleteId = null;
+    let fileDialogActive = false;
+    let modalMouseDownTarget = null;
+
+    // ============================================================
+    // DOM CACHE
+    // ============================================================
+    const dishGrid = document.getElementById('dish-grid');
+    const dishSearch = document.getElementById('dish-search');
+    const dishSort = document.getElementById('dish-sort');
+    const totalCountLabel = document.getElementById('total-count-label');
+
+    const addModal = document.getElementById('add-modal');
+    const addForm = document.getElementById('add-form');
+    const editModal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('edit-form');
+    
+    const globalToast = document.getElementById('global-toast');
+    const deleteOverlay = document.getElementById('delete-confirm-overlay');
+
+    // ============================================================
+    // UTILS
+    // ============================================================
+    
+    function showToast(msg, icon = 'check_circle', color = 'text-primary') {
+      const iconEl = document.getElementById('toast-icon');
+      const msgEl = document.getElementById('toast-msg');
+      
+      iconEl.textContent = icon;
+      iconEl.className = `material-symbols-outlined ${color}`;
+      msgEl.textContent = msg;
+
+      globalToast.classList.replace('translate-y-20', 'translate-y-0');
+      globalToast.classList.replace('opacity-0', 'opacity-100');
+      
+      setTimeout(() => {
+        globalToast.classList.replace('translate-y-0', 'translate-y-20');
+        globalToast.classList.replace('opacity-100', 'opacity-0');
+      }, 3000);
+    }
+
+    // = ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // MODAL PROTECTION SYSTEM
+    // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    
+    let modalLocked = false;
+    function lockModals() {
+      modalLocked = true;
+      [addModal, editModal].forEach(m => m.style.pointerEvents = 'none');
+    }
+    function unlockModals() {
+      // 300ms is usually enough to swallow any synthetic focus-gain clicks on Windows
+      setTimeout(() => {
+        modalLocked = false;
+        [addModal, editModal].forEach(m => m.style.pointerEvents = 'auto');
+      }, 300);
+    }
+
+    function setupModalProtection(modal, card, closeFn) {
+      modal.addEventListener('mousedown', (e) => { 
+        if (modalLocked) return;
+        modalMouseDownTarget = e.target; 
+      });
+      modal.addEventListener('mouseup', (e) => {
+        if (modalLocked) return;
+        if (e.target === modal && modalMouseDownTarget === modal && !fileDialogActive) {
+          closeFn();
+        }
+      });
+      card.addEventListener('mousedown', (e) => e.stopPropagation());
+      card.addEventListener('mouseup', (e) => e.stopPropagation());
+      card.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    setupModalProtection(addModal, document.getElementById('add-modal-card'), () => addModal.style.display = 'none');
+    setupModalProtection(editModal, document.getElementById('edit-modal-card'), () => editModal.style.display = 'none');
+    setupModalProtection(deleteOverlay, deleteOverlay.querySelector('div'), () => deleteOverlay.style.display = 'none');
+
+    document.getElementById('add-modal-close').onclick = () => addModal.style.display = 'none';
+    document.getElementById('edit-modal-close').onclick = () => editModal.style.display = 'none';
+    document.getElementById('delete-cancel-btn').onclick = () => deleteOverlay.style.display = 'none';
+
+    // ============================================================
+    // IMAGE UPLOAD SYSTEM (ENCAPSULATED)
+    // ============================================================
+    
+    function createUploader(config) {
+      const { box, input, preview, placeholder, loader, urlInput, removeBtn, errorEl } = config;
+      
+      const setFlag = () => { 
+        fileDialogActive = true; 
+        lockModals();
+      };
+      const clearFlag = () => {
+        // Fallback: clear everything if the browser regains focus
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          fileDialogActive = false;
+          unlockModals();
+        }));
+      };
+
+      const reset = () => {
+        preview.classList.add('hidden');
+        preview.style.display = 'none';
+        placeholder.classList.remove('hidden');
+        placeholder.style.display = 'flex';
+        urlInput.value = '';
+        input.value = '';
+        if (removeBtn) removeBtn.style.display = 'none';
+        errorEl.style.display = 'none';
+      };
+
+      const updatePreview = (url) => {
+        preview.src = url;
+        preview.style.display = 'block';
+        preview.classList.remove('hidden');
+        placeholder.style.display = 'none';
+        placeholder.classList.add('hidden');
+        if (removeBtn) removeBtn.style.display = 'block';
+        errorEl.style.display = 'none';
+      };
+
+      const handleFile = async (file) => {
+        if (!file || !file.type.startsWith('image/')) {
+          errorEl.textContent = 'Invalid file format. Please use images.';
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        loader.style.display = 'flex';
+        updatePreview(URL.createObjectURL(file));
+
+        try {
+          const fd = new FormData();
+          fd.append('file', file);
+          const res = await fetch(`${API}/api/upload`, { method: 'POST', body: fd });
+          if (!res.ok) throw new Error('Network error');
+          const data = await res.json();
+          urlInput.value = data.url;
+          updatePreview(data.url);
+        } catch (e) {
+          errorEl.textContent = 'Upload failed. Try again.';
+          errorEl.style.display = 'block';
+        } finally {
+          loader.style.display = 'none';
+        }
+      };
+
+      let pickerTriggered = false;
+      box.onclick = () => {
+        if (pickerTriggered) return;
+        pickerTriggered = true;
+        
+        setFlag();
+        const finish = () => {
+          clearFlag();
+          setTimeout(() => { pickerTriggered = false; }, 1000);
+        };
+
+        input.addEventListener('cancel', finish, { once: true });
+        input.addEventListener('change', finish, { once: true });
+        input.click();
+      };
+      
+      input.onclick = (e) => e.stopPropagation();
+      input.onchange = (e) => handleFile(e.target.files[0]);
+
+      if (removeBtn) removeBtn.onclick = (e) => { e.stopPropagation(); reset(); };
+
+      // Drag and drop
+      box.ondragover = (e) => { e.preventDefault(); box.classList.add('drag-over'); };
+      box.ondragleave = () => box.classList.remove('drag-over');
+      box.ondrop = (e) => {
+        e.preventDefault();
+        box.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+      };
+
+      return { reset, updatePreview };
+    }
+
+    const addUploader = createUploader({
+      box: document.getElementById('add-uploader-box'),
+      input: document.getElementById('add-file-input'),
+      preview: document.getElementById('add-preview-img'),
+      placeholder: document.getElementById('add-upload-ui'),
+      loader: document.getElementById('add-upload-loader'),
+      urlInput: document.getElementById('add-image-url'),
+      removeBtn: document.getElementById('add-remove-photo'),
+      errorEl: document.getElementById('add-upload-error')
+    });
+
+    const editUploader = createUploader({
+      box: document.getElementById('edit-uploader-box'),
+      input: document.getElementById('edit-file-input'),
+      preview: document.getElementById('edit-preview-img'),
+      placeholder: document.getElementById('edit-upload-ui'),
+      loader: document.getElementById('edit-upload-loader'),
+      urlInput: document.getElementById('edit-image-url'),
+      errorEl: document.getElementById('edit-upload-error')
+    });
+
+    // ============================================================
+    // DATA LAYER
+    // ============================================================
+    
+    async function init() {
+      try {
+        const [cats, items] = await Promise.all([
+          api.getCategories(),
+          api.getMenu()
+        ]);
+        categories = cats;
+        allItems = items;
+        
+        populateCatSelects();
+        renderGrid();
+      } catch (e) {
+        showToast('Error loading data', 'error', 'text-red-500');
+      }
+    }
+
+    function populateCatSelects() {
+      const markup = `
+        <option value="">Uncategorized</option>
+        ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+      `;
+      document.getElementById('add-category-select').innerHTML = markup;
+      document.getElementById('edit-category-select').innerHTML = markup;
+    }
+
+    function renderGrid() {
+      const query = dishSearch.value.toLowerCase();
+      const sortBy = dishSort.value;
+
+      let filtered = allItems.filter(i => 
+        i.name.toLowerCase().includes(query) || (i.description || '').toLowerCase().includes(query)
+      );
+
+      // Sort
+      if (sortBy === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+      if (sortBy === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+      if (sortBy === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+      if (sortBy === 'newest') filtered.sort((a, b) => b.id - a.id);
+
+      totalCountLabel.textContent = filtered.length;
+
+      if (!filtered.length) {
+        dishGrid.innerHTML = `
+          <div class="col-span-full py-20 flex flex-col items-center justify-center text-slate-300">
+            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-4xl">search_off</span>
+            </div>
+            <p class="font-bold text-lg">No matches found for "${dishSearch.value}"</p>
+          </div>`;
+        return;
+      }
+
+      dishGrid.innerHTML = filtered.map((item, idx) => `
+        <div class="group bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 animate-slide-up" 
+             style="animation-delay: ${idx * 0.05}s">
+          <div class="relative h-56 overflow-hidden">
+            <img src="${item.image_url || 'https://placehold.co/600x400/f1f5f9/94a3b8?text=Delicious+Food'}" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="${item.name}"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm">
+              <p class="text-sm font-black text-slate-900">৳${item.price.toFixed(2)}</p>
+            </div>
+
+            <div class="absolute top-4 left-4 flex gap-1 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-sm text-amber-500 items-center">
+              <span class="material-symbols-outlined text-sm font-bold">star</span>
+              <span class="text-xs font-black">${item.rating}</span>
+            </div>
+
+            <button onclick="window.api_openEditModal(${item.id})" 
+                    class="absolute bottom-4 inset-x-4 bg-white hover:bg-slate-900 hover:text-white text-slate-900 font-bold py-3 rounded-2xl shadow-xl transition-all opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-sm">edit</span>
+              <span>Manage Dish</span>
+            </button>
+          </div>
+          
+          <div class="p-6">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <h3 class="font-bold text-slate-900 truncate">${item.name}</h3>
+              <div class="flex gap-1">
+                ${item.is_featured ? '<span class="bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded">Featured</span>' : ''}
+                ${!item.is_available ? '<span class="bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded">Hidden</span>' : ''}
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed h-8">${item.description || 'No description provided for this item.'}</p>
+            
+            <div class="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-3 py-1.5 rounded-xl">
+                ${categories.find(c => c.id === item.category_id)?.name || 'Uncategorized'}
+              </span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ============================================================
+    // MODAL ACTIONS
+    // ============================================================
+    
+    document.getElementById('add-dish-trigger').onclick = () => {
+      addForm.reset();
+      addUploader.reset();
+      addModal.style.display = 'flex';
+    };
+
+    window.api_openEditModal = (id) => {
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+
+      editUploader.reset();
+      document.getElementById('edit-item-id').value = item.id;
+      document.getElementById('edit-name').value = item.name;
+      document.getElementById('edit-price').value = item.price;
+      document.getElementById('edit-description').value = item.description || '';
+      document.getElementById('edit-category-select').value = item.category_id || '';
+      document.getElementById('edit-available').checked = item.is_available;
+      document.getElementById('edit-featured').checked = item.is_featured;
+      document.getElementById('edit-item-summary').textContent = `Adjusting details for "${item.name}"`;
+
+      if (item.image_url) {
+        editUploader.updatePreview(item.image_url);
+        document.getElementById('edit-image-url').value = item.image_url;
+      }
+
+      editModal.style.display = 'flex';
+    };
+
+    // ============================================================
+    // FORM SUBMISSIONS
+    // ============================================================
+
+    addForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('add-submit-btn');
+      const formData = new FormData(addForm);
+      const payload = Object.fromEntries(formData.entries());
+      
+      payload.price = parseFloat(payload.price);
+      if (payload.category_id) payload.category_id = parseInt(payload.category_id);
+      payload.is_available = !!payload.is_available;
+      payload.is_featured = !!payload.is_featured;
+      
+      btn.disabled = true;
+      btn.innerHTML = '<div class="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>';
+
+      try {
+        const res = await fetch(`${API}/api/menu`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error();
+        
+        addModal.style.display = 'none';
+        showToast(`${payload.name} added to menu!`);
+        await init();
+      } catch (e) {
+        showToast('Failed to create dish', 'error', 'text-red-500');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined">add_task</span><span>Confirm & Add to Menu</span>';
+      }
+    };
+
+    editForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('edit-submit-btn');
+      const id = document.getElementById('edit-item-id').value;
+      const formData = new FormData(editForm);
+      const payload = Object.fromEntries(formData.entries());
+      
+      payload.price = parseFloat(payload.price);
+      if (payload.category_id) payload.category_id = parseInt(payload.category_id);
+      payload.is_available = !!payload.is_available;
+      payload.is_featured = !!payload.is_featured;
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>';
+
+      try {
+        const res = await fetch(`${API}/api/menu/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error();
+        
+        editModal.style.display = 'none';
+        showToast(`Updated ${payload.name} successfully!`);
+        await init();
+      } catch (e) {
+        showToast('Failed to save updates', 'error', 'text-red-500');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined">save</span><span>Keep Changes</span>';
+      }
+    };
+
+    // ============================================================
+    // DELETE FLOW
+    // ============================================================
+    
+    document.getElementById('delete-btn-trigger').onclick = () => {
+      currentDeleteId = document.getElementById('edit-item-id').value;
+      document.getElementById('delete-target-name').textContent = document.getElementById('edit-name').value;
+      deleteOverlay.style.display = 'flex';
+      editModal.style.display = 'none';
+    };
+
+    document.getElementById('delete-confirm-btn').onclick = async () => {
+      const btn = document.getElementById('delete-confirm-btn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+
+      try {
+        const res = await fetch(`${API}/api/menu/${currentDeleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        
+        deleteOverlay.style.display = 'none';
+        showToast('Item deleted permanentely');
+        await init();
+      } catch (e) {
+        showToast('Failed to delete item', 'error', 'text-red-500');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Yes, Delete Forever';
+      }
+    };
+
+    // ============================================================
+    // EVENTS
+    // ============================================================
+    dishSearch.oninput = () => renderGrid();
+    dishSort.onchange = () => renderGrid();
+
+    // Start
+    init();
+
+  </script>
+</body>
+</html>

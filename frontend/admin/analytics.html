@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analytics — Mady Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Work Sans"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family:'Work Sans',sans-serif; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 overflow-hidden">
+<div class="flex h-screen">
+
+  <!-- SIDEBAR (Injected) -->
+  <div id="admin-sidebar-root"></div>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <header class="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-8 shrink-0">
+      <h2 class="text-xl font-bold">Analytics & Insights</h2>
+      <div class="flex items-center gap-3">
+        <select class="bg-slate-100 border-none rounded-lg text-xs font-bold py-2 px-4 focus:ring-2 focus:ring-primary">
+          <option>Last 7 Days</option>
+          <option>Last 30 Days</option>
+          <option>This Year</option>
+        </select>
+        <button class="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 transition-colors">
+          <span class="material-symbols-outlined text-sm">download</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-8 space-y-8">
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Conversion Rate</p>
+          <h3 class="text-3xl font-black">12.4%</h3>
+          <p class="text-green-600 text-xs mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">arrow_upward</span> +2.1% from last week
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">New Customers</p>
+          <h3 class="text-3xl font-black">184</h3>
+          <p class="text-green-600 text-xs mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">arrow_upward</span> +15% from last week
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Retention Rate</p>
+          <h3 class="text-3xl font-black">68%</h3>
+          <p class="text-slate-400 text-xs mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">horizontal_rule</span> Steady performance
+          </p>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold mb-6">Revenue Growth (৳)</h3>
+          <div class="h-64">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold mb-6">Order Volume</h3>
+          <div class="h-64">
+            <canvas id="volumeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE: TOP ITEMS -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+          <h3 class="font-bold">Item Performance</h3>
+          <button class="text-xs text-primary font-bold hover:underline">View Detailed Report</button>
+        </div>
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Item Name</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Category</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Qty Sold</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Revenue</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50 text-sm">
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-slate-800">Classic Mady Burger</td>
+                    <td class="px-6 py-4 text-slate-500">Burgers</td>
+                    <td class="px-6 py-4">421</td>
+                    <td class="px-6 py-4 text-right font-bold">৳124,500</td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-slate-800">Spicy Pasta Carbonara</td>
+                    <td class="px-6 py-4 text-slate-500">Pasta</td>
+                    <td class="px-6 py-4">312</td>
+                    <td class="px-6 py-4 text-right font-bold">৳98,200</td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-semibold text-slate-800">Double Cheese Feast</td>
+                    <td class="px-6 py-4 text-slate-500">Burgers</td>
+                    <td class="px-6 py-4">284</td>
+                    <td class="px-6 py-4 text-right font-bold">৳82,400</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="../js/admin/sidebar.js"></script>
+<script>
+  window.onload = () => {
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Revenue',
+          data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
+          borderColor: '#ea2a33',
+          backgroundColor: 'rgba(234, 42, 51, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volumeCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Orders',
+          data: [45, 62, 58, 85, 76, 95, 88],
+          backgroundColor: '#facc15',
+          borderRadius: 8
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+</script>
+</body>
+</html>

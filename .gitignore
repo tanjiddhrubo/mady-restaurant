@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# Database
+backend/database.db
+*.sqlite3
+
+# Uploads & Media
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Antigravity / Gemini
+.gemini/
+.agent/
+brain/
+logs/
+
+# Node (in case)
+node_modules/
+dist/
+build/

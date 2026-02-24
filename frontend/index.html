@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mady Restaurant — Order Fresh, Bold Flavors</title>
+    <meta
+      name="description"
+      content="Mady Restaurant — signature burgers, pasta, and more. Order online for fast delivery."
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ea2a33",
+              secondary: "#facc15",
+            },
+            fontFamily: { display: ["Plus Jakarta Sans", "sans-serif"] },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900 min-h-screen flex flex-col">
+    <!-- NAV -->
+    <nav
+      class="sticky top-0 z-50 flex items-center bg-white border-b border-primary/10 px-4 py-3 justify-between shadow-sm"
+    >
+      <div class="flex items-center">
+        <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 w-auto object-contain"/>
+      </div>
+      <div class="flex items-center gap-6">
+        <a
+          href="menu.html"
+          class="hidden md:flex items-center gap-1 text-primary font-bold text-sm uppercase tracking-wider"
+        >
+          <span class="material-symbols-outlined text-[20px]">menu_book</span>
+          Menu
+        </a>
+        <a
+          href="cart.html"
+          class="hidden md:flex items-center gap-1 text-primary font-bold text-sm uppercase tracking-wider relative"
+        >
+          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          Cart
+          <span data-cart-badge class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-white" style="display:none">0</span>
+        </a>
+        <a
+          href="#"
+          class="flex items-center gap-1 bg-primary text-white px-5 py-2 rounded-full font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-colors"
+        >
+          <span class="material-symbols-outlined text-[20px]">person</span>
+          Login
+        </a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <main class="flex-grow">
+      <section class="grid grid-cols-1 md:grid-cols-2 min-h-[600px]">
+        <!-- Left: Yellow panel -->
+        <div
+          class="bg-secondary flex flex-col justify-center p-8 md:p-16 lg:p-24 space-y-8"
+        >
+          <div class="space-y-6">
+            <div class="mb-2">
+                <img src="assets/images/mady_logo.jpeg" alt="Mady Logo" class="w-16 h-16 rounded-2xl object-cover shadow-xl border-2 border-white"/>
+            </div>
+            <span
+              class="inline-block bg-primary text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest"
+              >Delicious &amp; Fresh</span
+            >
+            <h1
+              class="text-slate-900 text-5xl md:text-7xl font-black leading-none tracking-tight"
+            >
+              Mady <br /><span class="text-primary">Restaurant</span>
+            </h1>
+            <p
+              class="text-slate-800 text-lg md:text-xl font-medium max-w-md opacity-90"
+            >
+              Experience the bold flavors of Mady. From our signature burgers to
+              fresh artisan pastas.
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a
+              href="menu.html"
+              class="bg-primary text-white text-lg font-black px-10 py-4 rounded-xl shadow-xl shadow-primary/20 hover:scale-105 transition-transform active:scale-95 flex items-center justify-center gap-2"
+            >
+              Order Now
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+            <a
+              href="menu.html"
+              class="bg-white text-slate-900 text-lg font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors border-2 border-slate-100 flex items-center justify-center"
+            >
+              View Menu
+            </a>
+          </div>
+        </div>
+        <!-- Right: Food image -->
+        <div class="relative min-h-[400px] md:min-h-full">
+          <div
+            class="absolute inset-0 bg-center bg-cover"
+            style="
+              background-image: url(&quot;assets/images/mady_hero.jfif&quot;);
+            "
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-transparent"
+          ></div>
+        </div>
+      </section>
+
+      <!-- FEATURED DISHES -->
+      <section class="max-w-7xl mx-auto px-4 py-16 md:py-24">
+        <div
+          class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4"
+        >
+          <div class="space-y-2">
+            <h2
+              class="text-primary text-sm font-black uppercase tracking-[0.2em]"
+            >
+              Chef's Special
+            </h2>
+            <h3 class="text-4xl md:text-5xl font-black text-slate-900">
+              Our Favorites
+            </h3>
+          </div>
+          <a
+            href="menu.html"
+            class="text-primary font-bold flex items-center gap-1 group"
+          >
+            See all dishes
+            <span
+              class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+              >trending_flat</span
+            >
+          </a>
+        </div>
+
+        <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Dynamically populated -->
+          <div class="col-span-full py-20 flex flex-col items-center justify-center text-slate-400 gap-4">
+            <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="font-bold tracking-widest uppercase text-xs">Curating our favorites...</p>
+          </div>
+        </div>
+
+        <script type="module">
+          import { api } from './js/api.js';
+          import { addItem, updateCartBadge } from './js/cart.js';
+
+          function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 md:bottom-12 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-sm text-white px-6 py-3 rounded-2xl shadow-2xl text-sm font-black z-[999] transition-all duration-300 opacity-0 transform translate-y-4';
+            toast.innerHTML = `<div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-lg">check_circle</span>${msg}</div>`;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+              toast.classList.remove('opacity-0', 'translate-y-4');
+            });
+            setTimeout(() => {
+              toast.classList.add('opacity-0', 'translate-y-4');
+              setTimeout(() => toast.remove(), 300);
+            }, 2500);
+          }
+
+          async function initFeatured() {
+            const grid = document.getElementById('featured-grid');
+            try {
+              const items = await api.getMenu();
+              const featured = items.filter(i => i.is_featured && i.is_available);
+
+              if (featured.length === 0) {
+                grid.innerHTML = `
+                  <div class="col-span-full py-20 text-center">
+                    <p class="text-slate-400 font-medium">Check back soon for our chef's specials!</p>
+                  </div>
+                `;
+                return;
+              }
+
+              grid.innerHTML = featured.map(item => `
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-slate-100">
+                  <div class="relative aspect-[4/3] overflow-hidden">
+                    <img src="${item.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" 
+                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                         alt="${item.name}"/>
+                    <div class="absolute top-4 right-4 bg-primary text-white font-black px-3 py-1 rounded-lg text-lg shadow-lg">
+                      ৳${item.price.toFixed(2)}
+                    </div>
+                  </div>
+                  <div class="p-6">
+                    <div class="flex justify-between items-center mb-2">
+                      <h4 class="text-xl font-bold">${item.name}</h4>
+                      <div class="flex items-center text-secondary">
+                        <span class="material-symbols-outlined">star</span>
+                        <span class="text-slate-600 font-bold ml-1">${item.rating ? item.rating.toFixed(1) : '4.5'}</span>
+                      </div>
+                    </div>
+                    <p class="text-slate-500 text-sm mb-6 line-clamp-2 h-10">
+                      ${item.description || 'Delight in the authentic flavors of Mady.'}
+                    </p>
+                    <button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2"
+                            data-add-to-cart="${item.id}"
+                            data-name="${item.name}"
+                            data-price="${item.price}"
+                            data-img="${item.image_url || ''}">
+                       <span class="material-symbols-outlined">add_shopping_cart</span>
+                       Add to Cart
+                    </button>
+                  </div>
+                </div>
+              `).join('');
+
+              // Wire up buttons
+              grid.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                  const id = Number(btn.dataset.addToCart);
+                  const name = btn.dataset.name;
+                  const price = Number(btn.dataset.price);
+                  const img = btn.dataset.img;
+                  addItem({ id, name, price, image_url: img });
+                  updateCartBadge();
+                  showToast(`${name} added to cart!`);
+                });
+              });
+
+            } catch (e) {
+              console.error('Failed to load featured items:', e);
+              grid.innerHTML = '<p class="col-span-full text-center text-red-500 font-bold">Failed to load our favorites. Please try again later.</p>';
+            }
+          }
+
+          document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+            initFeatured();
+          });
+        </script>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-white p-8">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 w-auto object-contain brightness-0 invert"/>
+          </div>
+          <p class="text-slate-400 text-sm">
+            Experience the bold flavors of Mady. Order your favorites today with
+            our modern dining experience.
+          </p>
+          <div class="flex gap-4 mt-6">
+            <a href="https://www.facebook.com/profile.php?id=61587293055358" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-primary transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="https://wa.me/qr/QEMLPK7XL6DFG1" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-[#25D366] transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.393 0 12.03c0 2.122.554 4.197 1.604 6.04L0 24l6.104-1.603a11.83 11.83 0 005.94 1.6c6.634 0 12.03-5.394 12.034-12.03a11.77 11.77 0 00-3.514-8.498z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h5 class="font-bold mb-4">Quick Links</h5>
+          <ul class="text-slate-400 text-sm space-y-2">
+            <li><a href="menu.html" class="hover:text-primary">Menu</a></li>
+            <li><a href="cart.html" class="hover:text-primary">Cart</a></li>
+            <li><a href="#" class="hover:text-primary">About Us</a></li>
+            <li><a href="#" class="hover:text-primary">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5 class="font-bold mb-4">Contact</h5>
+          <ul class="text-slate-400 text-sm space-y-2">
+            <li class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">call</span> +880 1812-882588
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">mail</span>
+              hello@mady.com
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">location_on</span>
+              123 Food Street, NY
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h5 class="font-bold mb-4">Newsletter</h5>
+          <div class="flex">
+            <input
+              class="bg-slate-800 border-none rounded-l-lg text-sm w-full px-3 focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="Email"
+              type="email"
+            />
+            <button class="bg-primary px-4 py-2 rounded-r-lg">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="max-w-7xl mx-auto border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-xs"
+      >
+        © 2024 Mady Restaurant. All rights reserved.
+      </div>
+    </footer>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div
+      class="md:hidden fixed bottom-0 w-full bg-white border-t border-primary/10 flex justify-around p-2 z-50"
+    >
+      <a href="index.html" class="flex flex-col items-center p-2 text-primary">
+        <span class="material-symbols-outlined">home</span
+        ><span class="text-[10px] font-bold uppercase">Home</span>
+      </a>
+      <a href="menu.html" class="flex flex-col items-center p-2 text-slate-400">
+        <span class="material-symbols-outlined">menu_book</span
+        ><span class="text-[10px] font-bold uppercase">Menu</span>
+      </a>
+      <a href="cart.html" class="flex flex-col items-center p-2 text-slate-400 relative">
+        <span class="material-symbols-outlined">shopping_cart</span><span class="text-[10px] font-bold uppercase">Cart</span>
+        <span data-cart-badge class="absolute top-1 right-2 bg-primary text-white text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-white" style="display:none">00</span>
+      </a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Categories — Mady Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Work Sans"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family:'Work Sans',sans-serif; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .icon-btn.selected { background:#fef2f2; outline:2px solid #ea2a33; }
+    .icon-btn:hover { background:#f1f5f9; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SHARED SIDEBAR -->
+  <div id="admin-sidebar-root"></div>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- HEADER -->
+    <header class="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-8 shrink-0">
+      <h2 class="text-xl font-bold">Category Management</h2>
+      <div class="flex items-center gap-3">
+        <button id="add-cat-btn"
+                class="bg-primary text-white font-bold px-5 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+          <span class="material-symbols-outlined text-sm">add</span> Add Category
+        </button>
+        <button id="add-sub-btn"
+                class="bg-slate-800 text-white font-bold px-5 py-2 rounded-lg flex items-center gap-2 hover:bg-slate-700 transition-colors shadow-sm">
+          <span class="material-symbols-outlined text-sm">add</span> Add Sub-Category
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="flex-1 overflow-y-auto p-8">
+      <div class="max-w-6xl mx-auto space-y-10">
+
+        <!-- CATEGORIES -->
+        <section>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-sm">folder</span>
+            </div>
+            <h3 class="text-lg font-black">Categories</h3>
+            <span id="cat-count" class="text-xs bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <div id="cat-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="col-span-4 text-center py-12 text-slate-400">
+              <span class="material-symbols-outlined text-4xl block mb-2">folder_open</span>
+              Loading categories…
+            </div>
+          </div>
+        </section>
+
+        <!-- SUB-CATEGORIES -->
+        <section>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-slate-800/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-slate-600 text-sm">folder_special</span>
+            </div>
+            <h3 class="text-lg font-black">Sub-Categories</h3>
+            <span id="sub-count" class="text-xs bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">0</span>
+            <select id="sub-filter" class="ml-auto border border-slate-200 rounded-lg text-sm font-medium px-3 py-1.5 focus:ring-2 focus:ring-primary focus:border-primary">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div id="sub-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="col-span-4 text-center py-12 text-slate-400">
+              <span class="material-symbols-outlined text-4xl block mb-2">label_off</span>
+              Loading sub-categories…
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============================================================
+     ADD CATEGORY MODAL
+     ============================================================ -->
+<div id="add-cat-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm p-4"
+     style="display:none; align-items:center; justify-content:center;">
+  <div id="add-cat-card" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col" style="max-height:90vh;">
+    <div class="px-8 py-5 flex items-center justify-between border-b border-slate-100 shrink-0">
+      <div>
+        <h3 class="text-xl font-black">Add Category</h3>
+        <p class="text-xs text-slate-400 mt-0.5">A top-level grouping for your menu</p>
+      </div>
+      <button id="close-add-cat" type="button"
+              class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+        <span class="material-symbols-outlined text-slate-400">close</span>
+      </button>
+    </div>
+    <div class="overflow-y-auto flex-1">
+      <form id="add-cat-form" novalidate class="px-8 py-6 space-y-5">
+        <!-- Name -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Name <span class="text-primary">*</span></span>
+          <input id="cat-name" name="name" required
+                 class="rounded-xl border-slate-200 bg-slate-50 p-3 focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+                 placeholder="e.g. Burgers"/>
+        </label>
+
+        <!-- Icon picker -->
+        <div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Icon</span>
+          <!-- Selected preview -->
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <span id="cat-icon-preview" class="material-symbols-outlined text-2xl text-primary">restaurant_menu</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-700" id="cat-icon-name-display">restaurant_menu</p>
+              <p class="text-xs text-slate-400">Click an icon below to select</p>
+            </div>
+          </div>
+          <input id="cat-icon" name="icon" type="hidden" value="restaurant_menu"/>
+          <!-- Icon grid -->
+          <div id="cat-icon-grid"
+               class="grid grid-cols-8 gap-1 p-3 bg-slate-50 rounded-xl border border-slate-200 max-h-44 overflow-y-auto">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Display order -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Display Order</span>
+          <input id="cat-order" name="display_order" type="number" value="0" min="0"
+                 class="rounded-xl border-slate-200 bg-slate-50 p-3 focus:ring-2 focus:ring-primary focus:border-primary text-sm"/>
+        </label>
+
+        <button type="submit" id="cat-submit-btn"
+                class="w-full bg-primary text-white font-black py-4 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+          <span class="material-symbols-outlined">add_circle</span> Add Category
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADD SUB-CATEGORY MODAL
+     ============================================================ -->
+<div id="add-sub-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm p-4"
+     style="display:none; align-items:center; justify-content:center;">
+  <div id="add-sub-card" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col" style="max-height:90vh;">
+    <div class="px-8 py-5 flex items-center justify-between border-b border-slate-100 shrink-0">
+      <div>
+        <h3 class="text-xl font-black">Add Sub-Category</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Belongs to a parent category</p>
+      </div>
+      <button id="close-add-sub" type="button"
+              class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+        <span class="material-symbols-outlined text-slate-400">close</span>
+      </button>
+    </div>
+    <div class="overflow-y-auto flex-1">
+      <form id="add-sub-form" novalidate class="px-8 py-6 space-y-5">
+        <!-- Parent category -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Parent Category <span class="text-primary">*</span></span>
+          <select id="sub-category-id" name="category_id"
+                  class="rounded-xl border-slate-200 bg-slate-50 p-3 focus:ring-2 focus:ring-primary focus:border-primary text-sm">
+            <option value="">— choose a category —</option>
+          </select>
+        </label>
+
+        <!-- Name -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Name <span class="text-primary">*</span></span>
+          <input id="sub-name" name="name" required
+                 class="rounded-xl border-slate-200 bg-slate-50 p-3 focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+                 placeholder="e.g. Veggie Burgers"/>
+        </label>
+
+        <!-- Icon picker -->
+        <div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Icon</span>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+              <span id="sub-icon-preview" class="material-symbols-outlined text-2xl text-slate-600">label</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-700" id="sub-icon-name-display">label</p>
+              <p class="text-xs text-slate-400">Click an icon below to select</p>
+            </div>
+          </div>
+          <input id="sub-icon" name="icon" type="hidden" value="label"/>
+          <div id="sub-icon-grid"
+               class="grid grid-cols-8 gap-1 p-3 bg-slate-50 rounded-xl border border-slate-200 max-h-44 overflow-y-auto">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Display order -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Display Order</span>
+          <input id="sub-order" name="display_order" type="number" value="0" min="0"
+                 class="rounded-xl border-slate-200 bg-slate-50 p-3 focus:ring-2 focus:ring-primary focus:border-primary text-sm"/>
+        </label>
+
+        <button type="submit" id="sub-submit-btn"
+                class="w-full bg-slate-800 text-white font-black py-4 rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
+          <span class="material-symbols-outlined">add_circle</span> Add Sub-Category
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE TOAST -->
+<div id="delete-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50
+     bg-slate-900 text-white rounded-2xl shadow-2xl flex items-center gap-4 px-6 py-4 min-w-[320px]"
+     style="display:none;">
+  <span class="material-symbols-outlined text-red-400">delete_forever</span>
+  <div class="flex-1">
+    <p id="delete-toast-msg" class="font-semibold text-sm">Remove this item?</p>
+    <p id="delete-toast-name" class="text-xs text-slate-400 truncate mt-0.5"></p>
+  </div>
+  <div class="flex items-center gap-2">
+    <button id="delete-cancel" class="text-xs text-slate-400 hover:text-white transition-colors font-semibold px-3 py-1.5">Cancel</button>
+    <button id="delete-confirm" class="bg-red-500 hover:bg-red-600 text-white text-xs font-black px-4 py-1.5 rounded-lg transition-colors">Remove</button>
+  </div>
+</div>
+
+<script type="module" src="../js/admin/sidebar.js"></script>
+<script type="module">
+  const API = 'http://localhost:8000';
+  let categories = [];
+  let subcategories = [];
+  let pendingDelete = null;
+
+  // ── ICON LIST ─────────────────────────────────────────────────────
+  // Curated food & restaurant relevant Material Symbols
+  const ICONS = [
+    // Food & drink
+    'restaurant_menu','restaurant','fastfood','lunch_dining','dinner_dining',
+    'breakfast_dining','brunch_dining','bakery_dining','ramen_dining','kebab_dining',
+    'rice_bowl','set_meal','tapas','local_pizza','outdoor_grill','soup_kitchen',
+    'icecream','cake','cookie','egg','nutrition','no_meals','food_bank',
+    // Drinks
+    'local_drink','coffee','local_cafe','water_drop','wine_bar','sports_bar',
+    'liquor','emoji_food_beverage',
+    // Grocery / ingredients
+    'grocery','grocery_bag','eco','grass','category',
+    // General labels
+    'label','star','new_releases','verified','thumb_up','favorite',
+    'local_fire_department','whatshot','bolt','tag','bookmark',
+    // Misc useful
+    'sell','percent','discount','loyalty','redeem','storefront','takeout_dining',
+    'delivery_dining','pedal_bike','two_wheeler','directions_car',
+    'schedule','timer','alarm','event','today',
+  ];
+
+  function buildIconGrid(gridId, hiddenInputId, previewId, nameDisplayId, initial) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = ICONS.map(icon => `
+      <button type="button"
+              class="icon-btn w-9 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${icon === initial ? 'selected' : ''}"
+              data-icon="${icon}" title="${icon}">
+        <span class="material-symbols-outlined text-xl text-slate-600 pointer-events-none">${icon}</span>
+      </button>`).join('');
+
+    grid.addEventListener('click', e => {
+      const btn = e.target.closest('.icon-btn');
+      if (!btn) return;
+      const icon = btn.dataset.icon;
+      // update selection highlight
+      grid.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      // update hidden input + preview
+      document.getElementById(hiddenInputId).value = icon;
+      document.getElementById(previewId).textContent = icon;
+      document.getElementById(nameDisplayId).textContent = icon;
+    });
+  }
+
+  // ── DATA ──────────────────────────────────────────────────────────
+
+  async function loadCategories() {
+    const res = await fetch(`${API}/api/categories`);
+    categories = await res.json();
+    renderCategories();
+    populateCategorySelects();
+  }
+
+  async function loadSubCategories() {
+    const filterId = document.getElementById('sub-filter').value;
+    const url = filterId ? `${API}/api/subcategories?category_id=${filterId}` : `${API}/api/subcategories`;
+    const res = await fetch(url);
+    subcategories = await res.json();
+    renderSubCategories();
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────
+
+  function catCard(cat) {
+    return `
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 flex items-center gap-4 group">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl text-primary">${cat.icon}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-slate-900 truncate">${cat.name}</p>
+          <p class="text-xs text-slate-400 mt-0.5">Order: ${cat.display_order} &bull; ID #${cat.id}</p>
+        </div>
+        <button class="delete-cat-btn opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 transition-all shrink-0"
+                data-id="${cat.id}" data-name="${cat.name}">
+          <span class="material-symbols-outlined text-sm pointer-events-none">delete</span>
+        </button>
+      </div>`;
+  }
+
+  function subCard(sub) {
+    const parentName = categories.find(c => c.id === sub.category_id)?.name ?? '–';
+    return `
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 flex items-center gap-4 group">
+        <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl text-slate-500">${sub.icon}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-slate-900 truncate">${sub.name}</p>
+          <p class="text-xs text-slate-400 mt-0.5 truncate">
+            Under: <span class="text-primary font-semibold">${parentName}</span> &bull; ID #${sub.id}
+          </p>
+        </div>
+        <button class="delete-sub-btn opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 transition-all shrink-0"
+                data-id="${sub.id}" data-name="${sub.name}">
+          <span class="material-symbols-outlined text-sm pointer-events-none">delete</span>
+        </button>
+      </div>`;
+  }
+
+  function renderCategories() {
+    const grid = document.getElementById('cat-grid');
+    document.getElementById('cat-count').textContent = categories.length;
+    grid.innerHTML = categories.length
+      ? categories.map(catCard).join('')
+      : `<div class="col-span-4 text-center py-12 text-slate-400">
+           <span class="material-symbols-outlined text-4xl block mb-2">folder_open</span>
+           No categories yet. Add one above.
+         </div>`;
+  }
+
+  function renderSubCategories() {
+    const grid = document.getElementById('sub-grid');
+    document.getElementById('sub-count').textContent = subcategories.length;
+    grid.innerHTML = subcategories.length
+      ? subcategories.map(subCard).join('')
+      : `<div class="col-span-4 text-center py-12 text-slate-400">
+           <span class="material-symbols-outlined text-4xl block mb-2">label_off</span>
+           No sub-categories yet.
+         </div>`;
+  }
+
+  function populateCategorySelects() {
+    ['sub-category-id', 'sub-filter'].forEach(id => {
+      const sel = document.getElementById(id);
+      while (sel.options.length > 1) sel.remove(1);
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  // ── EVENT DELEGATION ──────────────────────────────────────────────
+
+  document.getElementById('cat-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.delete-cat-btn');
+    if (btn) showDeleteToast('cat', parseInt(btn.dataset.id), btn.dataset.name);
+  });
+  document.getElementById('sub-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.delete-sub-btn');
+    if (btn) showDeleteToast('sub', parseInt(btn.dataset.id), btn.dataset.name);
+  });
+  document.getElementById('sub-filter').addEventListener('change', loadSubCategories);
+
+  // ── MODALS ─────────────────────────────────────────────────────────
+
+  const addCatModal = document.getElementById('add-cat-modal');
+  const addSubModal = document.getElementById('add-sub-modal');
+
+  // Build icon grids once
+  buildIconGrid('cat-icon-grid', 'cat-icon', 'cat-icon-preview', 'cat-icon-name-display', 'restaurant_menu');
+  buildIconGrid('sub-icon-grid', 'sub-icon', 'sub-icon-preview', 'sub-icon-name-display', 'label');
+
+  document.getElementById('add-cat-btn').addEventListener('click', () => {
+    document.getElementById('add-cat-form').reset();
+    // reset icon selection
+    document.getElementById('cat-icon').value = 'restaurant_menu';
+    document.getElementById('cat-icon-preview').textContent = 'restaurant_menu';
+    document.getElementById('cat-icon-name-display').textContent = 'restaurant_menu';
+    document.getElementById('cat-icon-grid').querySelectorAll('.icon-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.icon === 'restaurant_menu');
+    });
+    addCatModal.style.display = 'flex';
+  });
+  document.getElementById('close-add-cat').addEventListener('click', () => { addCatModal.style.display = 'none'; });
+  addCatModal.addEventListener('click', e => { if (e.target === addCatModal) addCatModal.style.display = 'none'; });
+  document.getElementById('add-cat-card').addEventListener('click', e => e.stopPropagation());
+
+  document.getElementById('add-sub-btn').addEventListener('click', () => {
+    document.getElementById('add-sub-form').reset();
+    document.getElementById('sub-icon').value = 'label';
+    document.getElementById('sub-icon-preview').textContent = 'label';
+    document.getElementById('sub-icon-name-display').textContent = 'label';
+    document.getElementById('sub-icon-grid').querySelectorAll('.icon-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.icon === 'label');
+    });
+    addSubModal.style.display = 'flex';
+  });
+  document.getElementById('close-add-sub').addEventListener('click', () => { addSubModal.style.display = 'none'; });
+  addSubModal.addEventListener('click', e => { if (e.target === addSubModal) addSubModal.style.display = 'none'; });
+  document.getElementById('add-sub-card').addEventListener('click', e => e.stopPropagation());
+
+  // ── FORMS ─────────────────────────────────────────────────────────
+
+  document.getElementById('add-cat-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('cat-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+    try {
+      const payload = {
+        name: document.getElementById('cat-name').value.trim(),
+        icon: document.getElementById('cat-icon').value || 'restaurant_menu',
+        display_order: parseInt(document.getElementById('cat-order').value) || 0,
+      };
+      if (!payload.name) { alert('Name is required.'); return; }
+      const res = await fetch(`${API}/api/categories`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      addCatModal.style.display = 'none';
+      await loadCategories();
+    } catch (err) {
+      alert('Failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined">add_circle</span> Add Category';
+    }
+  });
+
+  document.getElementById('add-sub-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('sub-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+    try {
+      const catId = document.getElementById('sub-category-id').value;
+      if (!catId) { alert('Please select a parent category.'); return; }
+      const payload = {
+        name: document.getElementById('sub-name').value.trim(),
+        icon: document.getElementById('sub-icon').value || 'label',
+        display_order: parseInt(document.getElementById('sub-order').value) || 0,
+        category_id: parseInt(catId),
+      };
+      if (!payload.name) { alert('Name is required.'); return; }
+      const res = await fetch(`${API}/api/subcategories`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      addSubModal.style.display = 'none';
+      await loadSubCategories();
+    } catch (err) {
+      alert('Failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined">add_circle</span> Add Sub-Category';
+    }
+  });
+
+  // ── DELETE TOAST ──────────────────────────────────────────────────
+
+  const deleteToast = document.getElementById('delete-toast');
+
+  function showDeleteToast(type, id, name) {
+    pendingDelete = { type, id, name };
+    document.getElementById('delete-toast-msg').textContent =
+      type === 'cat' ? 'Remove this category? All sub-categories will also be removed.' : 'Remove this sub-category?';
+    document.getElementById('delete-toast-name').textContent = name;
+    deleteToast.style.display = 'flex';
+  }
+
+  document.getElementById('delete-cancel').addEventListener('click', () => {
+    deleteToast.style.display = 'none';
+    pendingDelete = null;
+  });
+
+  document.getElementById('delete-confirm').addEventListener('click', async () => {
+    if (!pendingDelete) return;
+    const btn = document.getElementById('delete-confirm');
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      const url = pendingDelete.type === 'cat'
+        ? `${API}/api/categories/${pendingDelete.id}`
+        : `${API}/api/subcategories/${pendingDelete.id}`;
+      await fetch(url, { method: 'DELETE' });
+      deleteToast.style.display = 'none';
+      pendingDelete = null;
+      await Promise.all([loadCategories(), loadSubCategories()]);
+    } catch (err) {
+      alert('Failed: ' + err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Remove';
+    }
+  });
+
+  // ── INIT ──────────────────────────────────────────────────────────
+  await Promise.all([loadCategories(), loadSubCategories()]);
+</script>
+</body>
+</html>

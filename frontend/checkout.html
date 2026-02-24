@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout — Mady Restaurant</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Plus Jakarta Sans"] },
+          borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+        },
+      },
+    };
+  </script>
+  <style>body{font-family:'Plus Jakarta Sans',sans-serif;} .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}</style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen">
+<div class="max-w-[1280px] mx-auto px-4 py-6">
+
+  <!-- TOP NAV -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center gap-4">
+      <a href="cart.html" class="bg-white p-2 rounded-full shadow-sm cursor-pointer border border-primary/10">
+        <span class="material-symbols-outlined text-primary block">arrow_back</span>
+      </a>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Checkout</h1>
+        <p class="text-sm text-slate-500">Complete your order from Mady's Kitchen</p>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-2">
+      <span class="material-symbols-outlined text-secondary">verified_user</span>
+      <span class="text-xs font-medium uppercase tracking-wider">Secure Checkout</span>
+    </div>
+  </div>
+
+  <form id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-8" novalidate>
+    <!-- LEFT: FORMS -->
+    <div class="lg:col-span-8 space-y-6">
+      <!-- Delivery address -->
+      <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="bg-primary/10 p-2 rounded-lg"><span class="material-symbols-outlined text-primary">location_on</span></div>
+          <h2 class="text-xl font-bold">Delivery Address</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-primary">Full Name <span class="text-slate-400 font-normal ml-1">(Required)</span></span>
+            <input id="full-name" required class="w-full rounded-lg border-slate-200 bg-slate-50 focus:ring-primary focus:border-primary p-3" placeholder="Enter your full name" type="text"/>
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-primary">Phone Number <span class="text-slate-400 font-normal ml-1">(Required)</span></span>
+            <input id="phone" required class="w-full rounded-lg border-slate-200 bg-slate-50 focus:ring-primary focus:border-primary p-3" placeholder="01XXX-XXXXXX" type="tel"/>
+          </label>
+          <label class="flex flex-col gap-2 md:col-span-2">
+            <span class="text-sm font-semibold text-primary">Street Address <span class="text-slate-400 font-normal ml-1">(Required)</span></span>
+            <input id="street" required class="w-full rounded-lg border-slate-200 bg-slate-50 focus:ring-primary focus:border-primary p-3" placeholder="e.g. House 12, Road 4, Dhanmondi" type="text"/>
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-primary">City</span>
+            <input id="city" class="w-full rounded-lg border-slate-200 bg-slate-50 focus:ring-primary focus:border-primary p-3" placeholder="New York" type="text"/>
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-primary">Zip Code</span>
+            <input id="zip" class="w-full rounded-lg border-slate-200 bg-slate-50 focus:ring-primary focus:border-primary p-3" placeholder="10001" type="text"/>
+          </label>
+        </div>
+      </section>
+
+      <!-- Payment -->
+      <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="bg-primary/10 p-2 rounded-lg"><span class="material-symbols-outlined text-primary">payments</span></div>
+          <h2 class="text-xl font-bold">Payment Method</h2>
+        </div>
+        
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex items-center gap-4">
+            <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center border border-slate-100">
+                <span class="material-symbols-outlined text-primary">payments</span>
+            </div>
+            <div>
+                <p class="font-bold text-slate-900 leading-tight">Cash on Delivery</p>
+                <p class="text-xs text-slate-500 mt-0.5">Pay when your food arrives at your doorstep</p>
+            </div>
+            <div class="ml-auto">
+                <span class="material-symbols-outlined text-green-600">check_circle</span>
+            </div>
+        </div>
+
+        <div class="mt-6 flex items-start gap-3 text-slate-400">
+            <span class="material-symbols-outlined text-sm mt-0.5">info</span>
+            <p class="text-[11px] leading-relaxed">
+                Online payment is currently disabled. We are only accepting Cash on Delivery (COD) to ensure the smoothest experience for our local customers.
+            </p>
+        </div>
+      </section>
+
+      <!-- Mobile submit -->
+      <button type="submit" data-order-btn class="block lg:hidden w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg transition-colors">
+        Place Order
+      </button>
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="lg:col-span-4">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm sticky top-6">
+        <h2 class="text-xl font-bold mb-6">Your Order</h2>
+        <div id="order-items-list" class="space-y-4 mb-6">
+          <p class="text-slate-400 text-sm">Loading…</p>
+        </div>
+        <div class="border-t border-dashed border-slate-200 py-4 space-y-2">
+          <div class="flex justify-between text-slate-600"><span>Subtotal</span><span id="subtotal">৳0.00</span></div>
+          <div class="flex justify-between text-slate-600"><span>Delivery</span><span class="text-green-600 font-medium">Free</span></div>
+          <div class="flex justify-between text-slate-600"><span>Tax (8%)</span><span id="tax">৳0.00</span></div>
+        </div>
+        <div class="border-t border-slate-200 pt-4 mb-6">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-bold">Total</span>
+            <span id="grand-total" class="text-2xl font-bold text-primary">৳0.00</span>
+          </div>
+        </div>
+        <div class="bg-secondary/10 p-4 rounded-lg border border-secondary/30 mb-6 flex items-start gap-3">
+          <span class="material-symbols-outlined text-secondary">local_offer</span>
+          <p class="text-xs font-medium">Free delivery on your order with Mady!</p>
+        </div>
+        <button type="submit" class="hidden lg:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg transition-colors items-center justify-center gap-2">
+          Place Order <span class="material-symbols-outlined">shopping_bag</span>
+        </button>
+        <p class="text-[10px] text-center text-slate-400 mt-4 px-4 uppercase tracking-widest">By placing your order, you agree to Mady's terms of service.</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script type="module" src="js/checkout.js"></script>
+</body>
+</html>

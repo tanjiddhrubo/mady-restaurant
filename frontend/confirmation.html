@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Confirmed — Mady Restaurant</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Plus Jakarta Sans"] },
+          borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+        },
+      },
+    };
+  </script>
+  <style>body{font-family:'Plus Jakarta Sans',sans-serif;} .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}</style>
+</head>
+<body class="bg-white min-h-screen flex flex-col items-center justify-center text-center px-4">
+  <div class="bg-secondary/20 w-24 h-24 rounded-full flex items-center justify-center mb-6 animate-bounce">
+    <span class="material-symbols-outlined text-secondary text-5xl">check_circle</span>
+  </div>
+  <h1 class="text-4xl font-black text-slate-900 mb-2">Your Order is Placed!</h1>
+  <p class="text-slate-500 text-lg mb-2">Thanks for ordering from Mady 🍔</p>
+  <p class="text-slate-400 text-sm mb-8" id="order-ref">Order #—</p>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-sm w-full mb-8 space-y-4">
+    <div class="flex items-center gap-3 text-left">
+      <div class="w-10 h-10 rounded-full bg-secondary/30 flex items-center justify-center text-slate-700">
+        <span class="material-symbols-outlined">receipt</span>
+      </div>
+      <div><p class="font-semibold">Order Confirmed</p><p class="text-sm text-slate-500">We got your order!</p></div>
+    </div>
+    <div class="w-px h-8 bg-slate-200 mx-5"></div>
+    <div class="flex items-center gap-3 text-left">
+      <div class="w-10 h-10 rounded-full bg-secondary/30 flex items-center justify-center text-slate-700">
+        <span class="material-symbols-outlined">restaurant</span>
+      </div>
+      <div><p class="font-semibold">Preparing</p><p class="text-sm text-slate-500">Our kitchen is working</p></div>
+    </div>
+    <div class="w-px h-8 bg-slate-200 mx-5"></div>
+    <div class="flex items-center gap-3 text-left opacity-40">
+      <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+        <span class="material-symbols-outlined">delivery_dining</span>
+      </div>
+      <div><p class="font-semibold">On the way</p><p class="text-sm text-slate-500">Arriving soon</p></div>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+    <a href="menu.html" class="flex-1 bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined">restaurant_menu</span> Order More
+    </a>
+    <a href="index.html" class="flex-1 border-2 border-primary text-primary font-bold py-4 rounded-xl hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined">home</span> Home
+    </a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get('order_id');
+    if (id) document.getElementById('order-ref').textContent = `Order #${id}`;
+  </script>
+</body>
+</html>

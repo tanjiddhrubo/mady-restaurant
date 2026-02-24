@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Management — Mady Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Work Sans"] },
+          borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family:'Work Sans',sans-serif; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SHARED SIDEBAR -->
+  <div id="admin-sidebar-root"></div>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- TOP HEADER -->
+    <header class="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-8 shrink-0">
+      <h2 class="text-xl font-bold">Order Management</h2>
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+          <input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Search orders…" type="text"/>
+        </div>
+        <button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 relative">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- STATUS TABS -->
+    <div class="px-8 py-0 bg-white border-b border-slate-200">
+      <div id="status-tabs" class="flex items-center gap-2"></div>
+    </div>
+
+    <!-- TABLE + DETAIL PANEL -->
+    <div class="flex-1 flex overflow-hidden">
+      <div class="flex-1 overflow-auto p-6">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200">
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Order ID</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Address</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Total</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Time</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody" class="divide-y divide-slate-100">
+              <tr><td colspan="6" class="text-center py-12 text-slate-400">Loading orders…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DETAIL SIDE PANEL -->
+      <aside id="detail-panel" class="hidden w-96 border-l border-slate-200 bg-white flex flex-col shadow-xl shrink-0">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold">Order Details</h3>
+            <p id="detail-order-id" class="text-sm text-primary font-semibold"></p>
+          </div>
+          <button id="close-panel" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100">
+            <span class="material-symbols-outlined text-slate-400">close</span>
+          </button>
+        </div>
+        <div class="flex-1 overflow-auto p-6 space-y-6">
+          <div>
+            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Customer Information</h4>
+            <div class="bg-slate-50 rounded-xl p-4 space-y-2">
+              <div class="flex gap-2 items-center">
+                <span class="material-symbols-outlined text-slate-400 text-sm">person</span>
+                <span id="detail-customer" class="font-semibold text-sm"></span>
+              </div>
+              <div class="flex gap-2 items-center">
+                <span class="material-symbols-outlined text-slate-400 text-sm">call</span>
+                <span id="detail-phone" class="text-sm text-slate-600"></span>
+              </div>
+              <div class="flex gap-2 items-start">
+                <span class="material-symbols-outlined text-slate-400 text-sm mt-0.5">location_on</span>
+                <span id="detail-address" class="text-sm text-slate-600"></span>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 bg-primary/5 rounded-xl space-y-3 border border-primary/10">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 text-sm font-medium">Grand Total</span>
+              <span id="detail-total" class="font-black text-xl text-primary"></span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500">Placed at</span>
+              <span id="detail-created" class="font-medium text-slate-700"></span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500">Status</span>
+              <span id="detail-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold"></span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Update Status</h4>
+            <select id="status-select" class="w-full rounded-xl border-slate-200 bg-white focus:ring-primary focus:border-primary text-sm p-3 shadow-sm">
+              <option value="pending">⏳ Pending</option>
+              <option value="preparing">🍳 Preparing</option>
+              <option value="out_for_delivery">🛵 Out for Delivery</option>
+              <option value="delivered">✅ Delivered</option>
+              <option value="cancelled">❌ Cancelled</option>
+            </select>
+            <p class="text-[10px] text-slate-400 mt-2 text-center">Change auto-saves immediately</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="../js/admin/sidebar.js"></script>
+<script type="module" src="../js/admin/orders.js"></script>
+</body>
+</html>

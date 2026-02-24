@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — Mady</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Work Sans"] },
+          borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family:'Work Sans',sans-serif; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SHARED SIDEBAR (injected by sidebar.js) -->
+  <div id="admin-sidebar-root"></div>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- TOP BAR -->
+    <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
+      <div class="w-96">
+        <label class="relative block">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <span class="material-symbols-outlined text-sm">search</span>
+          </span>
+          <input class="w-full bg-slate-100 border-none rounded-lg py-2 pl-10 pr-3 focus:ring-2 focus:ring-primary/50 text-sm" placeholder="Search orders, menu…" type="text"/>
+        </label>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button id="notif-btn" class="relative p-2 text-slate-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+            <span id="notif-badge" class="hidden absolute top-2 right-2 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
+          </button>
+          
+          <!-- Dropdown -->
+          <div id="notif-dropdown" class="hidden absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-slide-up">
+            <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
+              <h4 class="font-bold text-slate-900">Notifications</h4>
+              <button class="text-xs text-primary font-bold hover:underline">Mark all read</button>
+            </div>
+            <div id="notif-list" class="max-h-96 overflow-y-auto divide-y divide-slate-50">
+              <div class="p-8 text-center text-slate-400">
+                <p class="text-xs">No new notifications</p>
+              </div>
+            </div>
+            <a href="orders.html" class="block w-full py-3 bg-slate-50 text-center text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors">View All Orders</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 border-l pl-4 border-slate-200 text-sm text-slate-600 font-medium">
+          <span id="greeting"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="flex-1 overflow-y-auto p-8 space-y-8">
+      <!-- KPI TILES -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-secondary/10 rounded-bl-full"></div>
+          <div class="w-10 h-10 rounded-xl bg-secondary/30 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-amber-600">currency_lira</span>
+          </div>
+          <p class="text-slate-500 text-sm font-medium">Gross Sales</p>
+          <h3 id="stat-sales" class="text-3xl font-black mt-1 text-slate-900">—</h3>
+          <p class="text-green-600 text-xs font-semibold mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">trending_up</span> Live data
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-full"></div>
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-primary">receipt_long</span>
+          </div>
+          <p class="text-slate-500 text-sm font-medium">Total Orders</p>
+          <h3 id="stat-orders" class="text-3xl font-black mt-1 text-slate-900">—</h3>
+          <p class="text-green-600 text-xs font-semibold mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">trending_up</span> All time
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-bl-full"></div>
+          <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+          </div>
+          <p class="text-slate-500 text-sm font-medium">Delivered</p>
+          <h3 id="stat-delivered" class="text-3xl font-black mt-1 text-slate-900">—</h3>
+          <p class="text-green-600 text-xs font-semibold mt-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">check_circle</span> Completed
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full"></div>
+          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-blue-600">bar_chart</span>
+          </div>
+          <p class="text-slate-500 text-sm font-medium">Avg. Order Value</p>
+          <h3 id="stat-avg" class="text-3xl font-black mt-1 text-slate-900">—</h3>
+          <p class="text-slate-400 text-xs font-semibold mt-2">Per delivered order</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Chart -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-lg font-bold">Order Volume</h2>
+              <select class="bg-slate-50 border-none rounded-lg text-xs py-1 px-3 focus:ring-primary">
+                <option>Last 7 Days</option><option>Last 30 Days</option>
+              </select>
+            </div>
+            <div class="h-52 flex items-end gap-3 px-2">
+              <div class="flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[40%] transition-colors cursor-pointer" title="Mon"></div>
+              <div class="flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[55%] transition-colors cursor-pointer" title="Tue"></div>
+              <div class="flex-1 bg-primary rounded-t-lg h-[85%] relative cursor-pointer" title="Wed — Peak">
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded whitespace-nowrap shadow">Peak</div>
+              </div>
+              <div class="flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[65%] transition-colors cursor-pointer" title="Thu"></div>
+              <div class="flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[75%] transition-colors cursor-pointer" title="Fri"></div>
+              <div class="flex-1 bg-secondary/60 hover:bg-secondary rounded-t-lg h-[90%] transition-colors cursor-pointer" title="Sat"></div>
+              <div class="flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[50%] transition-colors cursor-pointer" title="Sun"></div>
+            </div>
+            <div class="flex justify-around mt-3 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+          </div>
+
+          <!-- Top items -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold">Top Performing Items</h2>
+              <a href="menu.html" class="text-xs text-primary font-bold hover:underline">Manage Menu</a>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <span class="text-2xl font-black text-slate-200 w-6">1</span>
+                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                  <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2ngy6phOx4-OelnoFmyIIya5e0ac10aQNtAP5mjQ90IDQgCrowKG4PmkFXb4HyCGDJuiCKO6IG8MNuDGGtEWQL8RpOurZGayNjt-R2oqahc0i10Bd_HKyZvyfMnirHjNQMC2_NYUVxzL5I_5NmEWGXWwwM9ojF-o5wdp3jf0F45VP-CFtvfe0egGyx0XoLLDd8rCh_ZbrjXmaJz3ZW2sHDKgkij_A9qbJbYs1U-Vnnv_n1lxipF65Dmyqmd5DDOHgPpu_Leg5eJQ" alt="Classic Mady"/>
+                </div>
+                <div class="flex-1"><p class="font-semibold text-sm">Classic Mady Burger</p><p class="text-xs text-slate-500">142 Sales</p></div>
+                <div class="text-right"><p class="font-bold text-sm">$2,840.00</p>
+                  <div class="h-1.5 w-28 bg-slate-100 rounded-full mt-1"><div class="h-full bg-primary rounded-full" style="width:90%"></div></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-2xl font-black text-slate-200 w-6">2</span>
+                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                  <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB5mDYPqVfScc45Xd2J5BB6XFlWMn1gQ-OC08144Cgk7Fi9RM6n2h5bEOPqgpo-kbCBY-MxOYmfAXTGi5tHwgMkjjftVIr1i1dgOz4uMmIIlWAESO7sKqtjwRULTsDnaPWEebZ__qQT28RPvgbERCdH57i2dFrlD2so4TXIc7wuQaoEST9mI5TnSuweKCDZIXxb-uADWKYYVR5XQEzpCaMZ5-Q-MYwkQGwFrco455eApdslAF8ix2hocUkdFXxqFn2q2iMAl6cuak" alt="Double Cheese"/>
+                </div>
+                <div class="flex-1"><p class="font-semibold text-sm">Double Cheese Burger</p><p class="text-xs text-slate-500">105 Sales</p></div>
+                <div class="text-right"><p class="font-bold text-sm">$1,920.00</p>
+                  <div class="h-1.5 w-28 bg-slate-100 rounded-full mt-1"><div class="h-full bg-secondary rounded-full" style="width:70%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold">Recent Activity</h2>
+            <a href="orders.html" class="text-primary text-xs font-bold hover:underline">View All</a>
+          </div>
+          <div class="space-y-5 flex-1">
+            <div class="flex gap-3">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                <span class="material-symbols-outlined text-sm">shopping_bag</span>
+              </div>
+              <div><p class="text-sm font-semibold">New order received</p><p class="text-xs text-slate-400 mt-0.5">2 minutes ago</p>
+                <span class="inline-block mt-1.5 px-2 py-0.5 bg-secondary/20 text-slate-700 text-[10px] font-bold rounded-full">Preparing</span>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+              </div>
+              <div><p class="text-sm font-semibold">Order #42 delivered</p><p class="text-xs text-slate-400 mt-0.5">15 minutes ago</p>
+                <span class="inline-block mt-1.5 px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">Delivered</span>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-sm">edit</span>
+              </div>
+              <div><p class="text-sm font-semibold">Menu updated</p><p class="text-xs text-slate-400 mt-0.5">2 hours ago</p></div>
+            </div>
+          </div>
+          <div class="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
+            <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">bolt</span> System Status
+            </h4>
+            <div class="flex items-center gap-2 text-xs text-slate-600">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> API online · DB connected
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="../js/admin/sidebar.js"></script>
+<script type="module" src="../js/admin/dashboard.js"></script>
+<script>
+  // Greeting
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 12 ? '☀️ Good morning' : h < 18 ? '👋 Good afternoon' : '🌙 Good evening';
+</script>
+</body>
+</html>
