@@ -26,7 +26,12 @@ BACKEND_DIR = Path(__file__).parent
 UPLOAD_DIR = BACKEND_DIR / "static" / "uploads"
 FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
 
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+# Avoid creating directories on Vercel's read-only filesystem
+if not os.environ.get("VERCEL"):
+    try:
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
 
 
 # ---------------------------------------------------------------------------
