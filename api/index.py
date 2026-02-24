@@ -197,9 +197,15 @@ def seed_database(session: Session) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    with Session(engine) as session:
-        seed_database(session)
+    print("Lifespan: Starting up...")
+    try:
+        create_db_and_tables()
+        print("Lifespan: Database tables checked/created.")
+        with Session(engine) as session:
+            seed_database(session)
+        print("Lifespan: Database seeding completed.")
+    except Exception as e:
+        print(f"Lifespan Error: {str(e)}")
     yield
 
 
@@ -230,8 +236,31 @@ app.mount("/static", StaticFiles(directory=UPLOAD_DIR.parent), name="static")
 # ---------------------------------------------------------------------------
 
 @app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "ok", "app": settings.APP_NAME}
+
+@app.get("/api/debug")
+def debug_info():
+    db_status = "unknown"
+    db_error = None
+    try:
+        from sqlmodel import select
+        with Session(engine) as session:
+            session.exec(select(Category)).first()
+            db_status = "connected"
+    except Exception as e:
+        db_status = "error"
+        db_error = str(e)
+
+    return {
+        "status": "online",
+        "database": db_status,
+        "database_error": db_error,
+        "database_url_masked": settings.DATABASE_URL.split("@")[-1] if "@" in settings.DATABASE_URL else "local",
+        "python_version": sys.version,
+        "sys_path": sys.path
+    }
 
 
 # -- Image upload --
