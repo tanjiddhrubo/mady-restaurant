@@ -1,10 +1,11 @@
-"""
-FastAPI entry point — wires together all layers and defines API routes.
-"""
-import uuid
+import sys
+from os.path import dirname, abspath
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
+
+# Ensure the 'api' directory is in sys.path so 'from app...' works
+sys.path.append(dirname(abspath(__file__)))
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -258,7 +259,7 @@ async def upload_image(file: UploadFile = File(...)):
     filename = f"{uuid.uuid4().hex}{suffix}"
     dest = UPLOAD_DIR / filename
     dest.write_bytes(await file.read())
-    return {"url": f"http://localhost:8000/static/uploads/{filename}"}
+    return {"url": f"/static/uploads/{filename}"}
 
 
 
@@ -434,9 +435,6 @@ def _order_to_read(order: Order) -> OrderRead:
     )
 
 
-# Serve frontend as static files
-# Important: This MUST be the very last thing mounted to avoid shadowing /api etc.
-if FRONTEND_DIR.exists():
+# Serve frontend as static files (Local dev fallback)
+if FRONTEND_DIR.exists() and not os.environ.get("VERCEL"):
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
-else:
-    print(f"Warning: Frontend directory not found at {FRONTEND_DIR}")
