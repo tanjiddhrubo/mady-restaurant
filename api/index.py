@@ -100,34 +100,6 @@ class MenuItemCreate(BaseModel):
     foodpanda_url: str = ""
 
 
-class OrderItemIn(BaseModel):
-    menu_item_id: int
-    quantity: int = 1
-
-
-class OrderCreate(BaseModel):
-    customer_name: str
-    customer_phone: str = ""
-    delivery_address: str = ""
-    notes: str = ""
-    items: list[OrderItemIn]
-
-
-class OrderStatusUpdate(BaseModel):
-    status: OrderStatus
-
-
-class OrderRead(BaseModel):
-    id: int
-    customer_name: str
-    customer_phone: str
-    delivery_address: str
-    status: OrderStatus
-    total_amount: float
-    created_at: str
-    notes: str
-
-    model_config = {"from_attributes": True}
 
 
 # ---------------------------------------------------------------------------
@@ -444,21 +416,6 @@ def dashboard_stats_stub(session: Session = Depends(get_session)):
 
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _order_to_read(order: Order) -> OrderRead:
-    return OrderRead(
-        id=order.id,
-        customer_name=order.customer_name,
-        customer_phone=order.customer_phone,
-        delivery_address=order.delivery_address,
-        status=order.status,
-        total_amount=order.total_amount,
-        created_at=order.created_at.isoformat(),
-        notes=order.notes,
-    )
 
 
 # Serve frontend as static files (Local dev fallback)
