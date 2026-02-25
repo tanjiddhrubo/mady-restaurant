@@ -1,336 +1,296 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mady Restaurant — Order Fresh, Bold Flavors</title>
-    <meta
-      name="description"
-      content="Mady Restaurant — signature burgers, pasta, and more. Order online for fast delivery."
-    />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#ea2a33",
-              secondary: "#facc15",
-            },
-            fontFamily: { display: ["Plus Jakarta Sans", "sans-serif"] },
-            borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              full: "9999px",
-            },
-          },
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mady Restaurant — Fresh, Bold Flavors</title>
+  <meta name="description" content="Mady Restaurant — signature burgers, pasta, and more. Order online via FoodPanda."/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary:"#ea2a33", secondary:"#facc15" },
+          fontFamily: { display:["Plus Jakarta Sans","sans-serif"] },
         },
-      };
-    </script>
-    <style>
-      body {
-        font-family: "Plus Jakarta Sans", sans-serif;
-      }
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-      }
-    </style>
-  </head>
-  <body class="bg-white text-slate-900 min-h-screen flex flex-col">
-    <!-- NAV -->
-    <nav
-      class="sticky top-0 z-50 flex items-center bg-white border-b border-primary/10 px-4 py-3 justify-between shadow-sm"
-    >
-      <div class="flex items-center">
-        <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 w-auto object-contain"/>
-      </div>
-      <div class="flex items-center gap-6">
-        <a
-          href="menu.html"
-          class="hidden md:flex items-center gap-1 text-primary font-bold text-sm uppercase tracking-wider"
-        >
-          <span class="material-symbols-outlined text-[20px]">menu_book</span>
-          Menu
+      },
+    };
+  </script>
+  <style>
+    body { font-family:"Plus Jakarta Sans",sans-serif; }
+    .material-symbols-outlined { font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation: fadeUp .4s ease both; }
+    .cat-btn.active { background:#ea2a33; color:#fff; }
+    .cat-btn { transition: all .2s; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+  <!-- ═══════════════════════ NAV ═══════════════════════ -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-100 px-4 py-3 flex items-center justify-between shadow-sm">
+    <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 w-auto object-contain"/>
+    <a href="https://foodpanda.go.link/8E4Aw" target="_blank"
+       class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/25">
+      <span class="material-symbols-outlined text-[18px]">delivery_dining</span>
+      Order Now
+    </a>
+  </nav>
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section class="grid grid-cols-1 md:grid-cols-2 min-h-[560px]">
+    <!-- Left yellow -->
+    <div class="bg-secondary flex flex-col justify-center px-8 md:px-16 lg:px-24 py-16 space-y-7">
+      <img src="assets/images/mady_logo.jpeg" alt="Mady Logo" class="w-16 h-16 rounded-2xl object-cover shadow-xl border-2 border-white"/>
+      <span class="inline-block bg-primary text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest w-fit">
+        Delicious &amp; Fresh
+      </span>
+      <h1 class="text-slate-900 text-5xl md:text-6xl font-black leading-none tracking-tight">
+        Mady<br/><span class="text-primary">Restaurant</span>
+      </h1>
+      <p class="text-slate-800 text-lg font-medium max-w-sm opacity-90">
+        Experience the bold flavors of Mady. From signature burgers to fresh artisan pastas.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="https://foodpanda.go.link/8E4Aw" target="_blank" id="hero-order-btn"
+           class="bg-primary text-white text-lg font-black px-10 py-4 rounded-xl shadow-xl shadow-primary/25 hover:scale-105 transition-transform active:scale-95 flex items-center justify-center gap-2">
+          Order Now <span class="material-symbols-outlined">arrow_forward</span>
         </a>
-        <a
-          href="https://foodpanda.go.link/8E4Aw"
-          target="_blank"
-          class="hidden md:flex items-center gap-1 text-primary font-bold text-sm uppercase tracking-wider"
-        >
-          <span class="material-symbols-outlined text-[20px]">delivery_dining</span>
-          Order Now
-        </a>
-        <a
-          href="#"
-          class="flex items-center gap-1 bg-primary text-white px-5 py-2 rounded-full font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-colors"
-        >
-          <span class="material-symbols-outlined text-[20px]">person</span>
-          Login
+        <a href="#menu"
+           class="bg-white text-slate-900 text-lg font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors border-2 border-slate-100 flex items-center justify-center">
+          View Menu
         </a>
       </div>
-    </nav>
+    </div>
+    <!-- Right food photo -->
+    <div class="relative min-h-[300px] md:min-h-full">
+      <div class="absolute inset-0 bg-center bg-cover"
+           style="background-image:url('assets/images/mady_hero.jfif')"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-transparent"></div>
+    </div>
+  </section>
 
-    <!-- HERO -->
-    <main class="flex-grow">
-      <section class="grid grid-cols-1 md:grid-cols-2 min-h-[600px]">
-        <!-- Left: Yellow panel -->
-        <div
-          class="bg-secondary flex flex-col justify-center p-8 md:p-16 lg:p-24 space-y-8"
-        >
-          <div class="space-y-6">
-            <div class="mb-2">
-                <img src="assets/images/mady_logo.jpeg" alt="Mady Logo" class="w-16 h-16 rounded-2xl object-cover shadow-xl border-2 border-white"/>
-            </div>
-            <span
-              class="inline-block bg-primary text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest"
-              >Delicious &amp; Fresh</span
-            >
-            <h1
-              class="text-slate-900 text-5xl md:text-7xl font-black leading-none tracking-tight"
-            >
-              Mady <br /><span class="text-primary">Restaurant</span>
-            </h1>
-            <p
-              class="text-slate-800 text-lg md:text-xl font-medium max-w-md opacity-90"
-            >
-              Experience the bold flavors of Mady. From our signature burgers to
-              fresh artisan pastas.
-            </p>
-          </div>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <a
-              href="menu.html"
-              class="bg-primary text-white text-lg font-black px-10 py-4 rounded-xl shadow-xl shadow-primary/20 hover:scale-105 transition-transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              Order Now
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </a>
-            <a
-              href="menu.html"
-              class="bg-white text-slate-900 text-lg font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors border-2 border-slate-100 flex items-center justify-center"
-            >
-              View Menu
-            </a>
-          </div>
-        </div>
-        <!-- Right: Food image -->
-        <div class="relative min-h-[400px] md:min-h-full">
-          <div
-            class="absolute inset-0 bg-center bg-cover"
-            style="
-              background-image: url(&quot;assets/images/mady_hero.jfif&quot;);
-            "
-          ></div>
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-transparent"
-          ></div>
-        </div>
-      </section>
-
-      <!-- FEATURED DISHES -->
-      <section class="max-w-7xl mx-auto px-4 py-16 md:py-24">
-        <div
-          class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4"
-        >
-          <div class="space-y-2">
-            <h2
-              class="text-primary text-sm font-black uppercase tracking-[0.2em]"
-            >
-              Chef's Special
-            </h2>
-            <h3 class="text-4xl md:text-5xl font-black text-slate-900">
-              Our Favorites
-            </h3>
-          </div>
-          <a
-            href="menu.html"
-            class="text-primary font-bold flex items-center gap-1 group"
-          >
-            See all dishes
-            <span
-              class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
-              >trending_flat</span
-            >
-          </a>
-        </div>
-
-        <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Dynamically populated -->
-          <div class="col-span-full py-20 flex flex-col items-center justify-center text-slate-400 gap-4">
-            <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <p class="font-bold tracking-widest uppercase text-xs">Curating our favorites...</p>
-          </div>
-        </div>
-
-        <script type="module">
-          import { api, FOODPANDA_URL } from '/js/api.js';
-
-          async function initFeatured() {
-            const grid = document.getElementById('featured-grid');
-            try {
-              const items = await api.getMenu();
-              const featured = items.filter(i => i.is_featured && i.is_available);
-
-              if (featured.length === 0) {
-                grid.innerHTML = `
-                  <div class="col-span-full py-20 text-center">
-                    <p class="text-slate-400 font-medium">Check back soon for our chef's specials!</p>
-                  </div>
-                `;
-                return;
-              }
-
-              grid.innerHTML = featured.map(item => {
-                const fpUrl = item.foodpanda_url || FOODPANDA_URL;
-                return `
-                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-slate-100">
-                  <div class="relative aspect-[4/3] overflow-hidden">
-                    <img src="${item.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" 
-                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                         alt="${item.name}"/>
-                    <div class="absolute top-4 right-4 bg-primary text-white font-black px-3 py-1 rounded-lg text-lg shadow-lg">
-                      ৳${item.price.toFixed(2)}
-                    </div>
-                  </div>
-                  <div class="p-6">
-                    <div class="flex justify-between items-center mb-2">
-                      <h4 class="text-xl font-bold">${item.name}</h4>
-                      <div class="flex items-center text-secondary">
-                        <span class="material-symbols-outlined">star</span>
-                        <span class="text-slate-600 font-bold ml-1">${item.rating ? item.rating.toFixed(1) : '4.5'}</span>
-                      </div>
-                    </div>
-                    <p class="text-slate-500 text-sm mb-6 line-clamp-2 h-10">
-                      ${item.description || 'Delight in the authentic flavors of Mady.'}
-                    </p>
-                    <button class="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all active:scale-95 shadow-md shadow-primary/20 flex items-center justify-center gap-2"
-                            data-foodpanda-url="${fpUrl}"
-                            data-item-id="${item.id}"
-                            data-name="${item.name}">
-                       <span class="material-symbols-outlined">delivery_dining</span>
-                       Order on FoodPanda
-                    </button>
-                  </div>
-                </div>`;
-              }).join('');
-
-              // Wire up FoodPanda redirect buttons
-              grid.querySelectorAll('[data-foodpanda-url]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                  const itemId = btn.dataset.itemId ? Number(btn.dataset.itemId) : null;
-                  const url = btn.dataset.foodpandaUrl || FOODPANDA_URL;
-                  api.trackClick(itemId);
-                  window.open(url, '_blank');
-                });
-              });
-
-            } catch (e) {
-              console.error('Failed to load featured items:', e);
-              grid.innerHTML = '<p class="col-span-full text-center text-red-500 font-bold">Failed to load our favorites. Please try again later.</p>';
-            }
-          }
-
-          document.addEventListener('DOMContentLoaded', () => {
-            initFeatured();
-          });
-        </script>
-      </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-900 text-white p-8">
-      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="space-y-4">
-          <div class="flex items-center">
-            <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 w-auto object-contain brightness-0 invert"/>
-          </div>
-          <p class="text-slate-400 text-sm">
-            Experience the bold flavors of Mady. Order your favorites today with
-            our modern dining experience.
-          </p>
-          <div class="flex gap-4 mt-6">
-            <a href="https://www.facebook.com/profile.php?id=61587293055358" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-primary transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            </a>
-            <a href="https://wa.me/qr/QEMLPK7XL6DFG1" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-[#25D366] transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.393 0 12.03c0 2.122.554 4.197 1.604 6.04L0 24l6.104-1.603a11.83 11.83 0 005.94 1.6c6.634 0 12.03-5.394 12.034-12.03a11.77 11.77 0 00-3.514-8.498z"/></svg>
-            </a>
-          </div>
-        </div>
-        <div>
-          <h5 class="font-bold mb-4">Quick Links</h5>
-          <ul class="text-slate-400 text-sm space-y-2">
-            <li><a href="menu.html" class="hover:text-primary">Menu</a></li>
-            <li><a href="https://foodpanda.go.link/8E4Aw" target="_blank" class="hover:text-primary">Order Now</a></li>
-            <li><a href="#" class="hover:text-primary">About Us</a></li>
-            <li><a href="#" class="hover:text-primary">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="font-bold mb-4">Contact</h5>
-          <ul class="text-slate-400 text-sm space-y-2">
-            <li class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm">call</span> +880 1812-882588
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm">mail</span>
-              hello@mady.com
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm">location_on</span>
-              123 Food Street, NY
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="font-bold mb-4">Newsletter</h5>
-          <div class="flex">
-            <input
-              class="bg-slate-800 border-none rounded-l-lg text-sm w-full px-3 focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Email"
-              type="email"
-            />
-            <button class="bg-primary px-4 py-2 rounded-r-lg">
-              <span class="material-symbols-outlined">send</span>
-            </button>
-          </div>
-        </div>
+  <!-- ═══════════════════════ FAVOURITES ═══════════════════════ -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+      <div class="space-y-1">
+        <p class="text-primary text-xs font-black uppercase tracking-[.2em]">Chef's Special</p>
+        <h2 class="text-4xl font-black text-slate-900">Our Favourites</h2>
       </div>
-      <div
-        class="max-w-7xl mx-auto border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-xs"
-      >
-        © 2024 Mady Restaurant. All rights reserved.
-      </div>
-    </footer>
-
-    <!-- MOBILE BOTTOM NAV -->
-    <div
-      class="md:hidden fixed bottom-0 w-full bg-white border-t border-primary/10 flex justify-around p-2 z-50"
-    >
-      <a href="index.html" class="flex flex-col items-center p-2 text-primary">
-        <span class="material-symbols-outlined">home</span
-        ><span class="text-[10px] font-bold uppercase">Home</span>
-      </a>
-      <a href="menu.html" class="flex flex-col items-center p-2 text-slate-400">
-        <span class="material-symbols-outlined">menu_book</span
-        ><span class="text-[10px] font-bold uppercase">Menu</span>
-      </a>
-      <a href="https://foodpanda.go.link/8E4Aw" target="_blank" class="flex flex-col items-center p-2 text-slate-400">
-        <span class="material-symbols-outlined">delivery_dining</span><span class="text-[10px] font-bold uppercase">Order</span>
+      <a href="#menu" class="text-primary font-bold flex items-center gap-1 group">
+        See full menu
+        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">trending_flat</span>
       </a>
     </div>
-  </body>
+    <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- spinner -->
+      <div class="col-span-full py-16 flex flex-col items-center justify-center text-slate-300 gap-4">
+        <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <p class="text-xs font-bold uppercase tracking-widest">Curating favourites…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FULL MENU ═══════════════════════ -->
+  <section id="menu" class="bg-white pt-12 pb-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="mb-10 space-y-1">
+        <p class="text-primary text-xs font-black uppercase tracking-[.2em]">Our Full Menu</p>
+        <h2 class="text-4xl font-black text-slate-900">Browse by Category</h2>
+      </div>
+
+      <!-- Category pills -->
+      <div id="cat-pills" class="flex gap-2 flex-wrap mb-8">
+        <button class="cat-btn active px-5 py-2 rounded-full text-sm font-bold border-2 border-primary bg-primary text-white" data-cat="">All</button>
+      </div>
+
+      <!-- Search -->
+      <div class="relative mb-8 max-w-sm">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+        <input id="search-input" type="text" placeholder="Search dishes…"
+               class="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-xl border-none text-sm font-medium focus:ring-2 focus:ring-primary transition-all"/>
+      </div>
+
+      <!-- Grid -->
+      <div id="food-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="col-span-full py-16 flex justify-center">
+          <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="bg-slate-900 text-white px-6 py-12">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div class="space-y-4">
+        <img src="assets/images/mady_logo.jpeg" alt="Mady Restaurant" class="h-10 object-contain brightness-0 invert"/>
+        <p class="text-slate-400 text-sm">Experience the bold flavors of Mady. Order via FoodPanda for fast delivery.</p>
+        <div class="flex gap-3 pt-2">
+          <a href="https://www.facebook.com/profile.php?id=61587293055358" target="_blank"
+             class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://wa.me/qr/QEMLPK7XL6DFG1" target="_blank"
+             class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#25D366] transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.393 0 12.03c0 2.122.554 4.197 1.604 6.04L0 24l6.104-1.603a11.83 11.83 0 005.94 1.6c6.634 0 12.03-5.394 12.034-12.03a11.77 11.77 0 00-3.514-8.498z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h5 class="font-bold mb-4">Contact</h5>
+        <ul class="text-slate-400 text-sm space-y-2">
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">call</span> +880 1812-882588</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">mail</span> hello@mady.com</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">location_on</span> Dhaka, Bangladesh</li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-bold mb-4">Order Online</h5>
+        <a href="https://foodpanda.go.link/8E4Aw" target="_blank"
+           class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">
+          <span class="material-symbols-outlined text-[18px]">delivery_dining</span>
+          Order on FoodPanda
+        </a>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto border-t border-slate-800 mt-10 pt-6 text-center text-slate-500 text-xs">
+      © 2024 Mady Restaurant. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 flex justify-around py-2 z-50">
+    <a href="#" class="flex flex-col items-center p-2 text-primary">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-bold uppercase">Home</span>
+    </a>
+    <a href="#menu" class="flex flex-col items-center p-2 text-slate-400">
+      <span class="material-symbols-outlined">menu_book</span>
+      <span class="text-[10px] font-bold uppercase">Menu</span>
+    </a>
+    <a href="https://foodpanda.go.link/8E4Aw" target="_blank" class="flex flex-col items-center p-2 text-slate-400">
+      <span class="material-symbols-outlined">delivery_dining</span>
+      <span class="text-[10px] font-bold uppercase">Order</span>
+    </a>
+  </div>
+
+  <script type="module">
+    import { api, FOODPANDA_URL } from '/js/api.js';
+
+    const GRID = document.getElementById('food-grid');
+    const FEAT = document.getElementById('featured-grid');
+    const PILLS = document.getElementById('cat-pills');
+    const SEARCH = document.getElementById('search-input');
+
+    let allItems = [];
+    let activeCat = '';   // '' = All
+
+    // ── Render a card ──────────────────────────────────────────
+    function card(item) {
+      const url = item.foodpanda_url || FOODPANDA_URL;
+      return `
+        <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 flex flex-col fade-up">
+          <div class="relative h-44 overflow-hidden">
+            <img src="${item.image_url || 'https://placehold.co/400x300/f1f5f9/94a3b8?text=Food'}"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="${item.name}"/>
+            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-3 py-1 rounded-xl text-sm font-black text-slate-900">
+              ৳${item.price.toFixed(2)}
+            </div>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <h3 class="font-bold text-slate-900 mb-1 truncate">${item.name}</h3>
+            <p class="text-slate-400 text-xs line-clamp-2 flex-1">${item.description || ''}</p>
+            <button class="mt-3 w-full bg-primary hover:bg-primary/90 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
+                    data-fp-url="${url}" data-item-id="${item.id}">
+              <span class="material-symbols-outlined text-[16px]">delivery_dining</span>
+              Order on FoodPanda
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function wireBtns(container) {
+      container.querySelectorAll('[data-fp-url]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const itemId = btn.dataset.itemId ? Number(btn.dataset.itemId) : null;
+          api.trackClick(itemId);
+          window.open(btn.dataset.fpUrl, '_blank');
+        });
+      });
+    }
+
+    // ── Featured ───────────────────────────────────────────────
+    function renderFeatured(items) {
+      const featured = items.filter(i => i.is_featured && i.is_available);
+      if (!featured.length) {
+        FEAT.innerHTML = '<p class="col-span-full text-center text-slate-400 py-10">Check back soon for chef\'s specials!</p>';
+        return;
+      }
+      FEAT.innerHTML = featured.map(card).join('');
+      wireBtns(FEAT);
+    }
+
+    // ── Main grid ──────────────────────────────────────────────
+    function renderGrid() {
+      const q = SEARCH.value.toLowerCase();
+      let list = allItems.filter(i => i.is_available);
+      if (activeCat) list = list.filter(i => String(i.category_id) === activeCat);
+      if (q) list = list.filter(i => i.name.toLowerCase().includes(q) || (i.description||'').toLowerCase().includes(q));
+
+      if (!list.length) {
+        GRID.innerHTML = '<p class="col-span-full text-center text-slate-400 py-16">No items found.</p>';
+        return;
+      }
+      GRID.innerHTML = list.map(card).join('');
+      wireBtns(GRID);
+    }
+
+    // ── Category pills ─────────────────────────────────────────
+    function buildPills(cats) {
+      cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn px-5 py-2 rounded-full text-sm font-bold border-2 border-slate-200 text-slate-600 hover:border-primary hover:text-primary';
+        btn.dataset.cat = String(c.id);
+        btn.textContent = c.name;
+        PILLS.appendChild(btn);
+      });
+
+      PILLS.addEventListener('click', e => {
+        const btn = e.target.closest('.cat-btn');
+        if (!btn) return;
+        PILLS.querySelectorAll('.cat-btn').forEach(b => {
+          b.classList.remove('active','bg-primary','text-white','border-primary');
+          b.classList.add('border-slate-200','text-slate-600');
+        });
+        btn.classList.add('active','bg-primary','text-white','border-primary');
+        btn.classList.remove('border-slate-200','text-slate-600');
+        activeCat = btn.dataset.cat;
+        renderGrid();
+      });
+    }
+
+    // ── Hero "Order Now" tracking ──────────────────────────────
+    document.getElementById('hero-order-btn').addEventListener('click', () => api.trackClick(null));
+
+    // ── Init ───────────────────────────────────────────────────
+    async function init() {
+      try {
+        const [cats, items] = await Promise.all([api.getCategories(), api.getMenu()]);
+        allItems = items;
+        buildPills(cats);
+        renderFeatured(items);
+        renderGrid();
+      } catch(e) {
+        console.error(e);
+        GRID.innerHTML = '<p class="col-span-full text-center text-red-400 py-10">Failed to load menu. Please refresh.</p>';
+      }
+    }
+
+    SEARCH.addEventListener('input', renderGrid);
+    init();
+  </script>
+</body>
 </html>
