@@ -18,12 +18,10 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.application.menu_service import MenuService
-from app.application.order_service import OrderService
 from app.core.config import settings
-from app.domain.models import Category, MenuItem, Order, OrderStatus, SubCategory
+from app.domain.models import Category, ClickEvent, MenuItem, SubCategory
 from app.infrastructure.database import create_db_and_tables, engine, get_session
 from app.infrastructure.menu_repository import SqlMenuRepository
-from app.infrastructure.order_repository import SqlOrderRepository
 
 # Directories
 BACKEND_DIR = Path(__file__).parent
@@ -85,6 +83,7 @@ class MenuItemRead(BaseModel):
     is_featured: bool
     category_id: Optional[int]
     category_name: Optional[str] = None
+    foodpanda_url: str = ""
 
     model_config = {"from_attributes": True}
 
@@ -98,6 +97,7 @@ class MenuItemCreate(BaseModel):
     is_available: bool = True
     is_featured: bool = False
     category_id: Optional[int] = None
+    foodpanda_url: str = ""
 
 
 class OrderItemIn(BaseModel):
@@ -136,10 +136,6 @@ class OrderRead(BaseModel):
 
 def get_menu_service(session: Session = Depends(get_session)) -> MenuService:
     return MenuService(SqlMenuRepository(session))
-
-
-def get_order_service(session: Session = Depends(get_session)) -> OrderService:
-    return OrderService(SqlOrderRepository(session))
 
 
 # ---------------------------------------------------------------------------
@@ -406,54 +402,46 @@ def update_menu_item(
     return data
 
 
-# -- Orders --
+# -- Analytics / Click Tracking --
 
-@app.post("/api/orders", response_model=OrderRead, status_code=201)
-def create_order(
-    payload: OrderCreate,
-    svc: OrderService = Depends(get_order_service),
-):
-    order = Order(
-        customer_name=payload.customer_name,
-        customer_phone=payload.customer_phone,
-        delivery_address=payload.delivery_address,
-        notes=payload.notes,
-    )
-    items = [{"menu_item_id": i.menu_item_id, "quantity": i.quantity} for i in payload.items]
-    created = svc.place_order(order, items)
-    return _order_to_read(created)
+class ClickTrack(BaseModel):
+    item_id: Optional[int] = None
+
+@app.post("/api/analytics/track")
+def track_click(payload: ClickTrack, session: Session = Depends(get_session)):
+    """Record a FoodPanda redirect click."""
+    event = ClickEvent(item_id=payload.item_id)
+    session.add(event)
+    session.commit()
+    return {"ok": True}
 
 
-@app.get("/api/orders", response_model=list[OrderRead])
-def list_orders(svc: OrderService = Depends(get_order_service)):
-    return [_order_to_read(o) for o in svc.get_all_orders()]
+@app.get("/api/analytics/clicks")
+def get_click_stats(session: Session = Depends(get_session)):
+    """Return total clicks and per-item click counts."""
+    from sqlmodel import select, func
+    all_events = session.exec(select(ClickEvent)).all()
+    total = len(all_events)
+    per_item: dict = {}
+    for e in all_events:
+        key = str(e.item_id or "shop")
+        per_item[key] = per_item.get(key, 0) + 1
+    return {"total_clicks": total, "per_item": per_item}
 
 
-@app.get("/api/orders/{order_id}", response_model=OrderRead)
-def get_order(order_id: int, svc: OrderService = Depends(get_order_service)):
-    order = svc.get_order(order_id)
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
-    return _order_to_read(order)
+# -- Orders (REMOVED — redirecting to FoodPanda) --
+# All order endpoints removed. Orders are now handled externally via FoodPanda.
 
 
-@app.patch("/api/orders/{order_id}/status", response_model=OrderRead)
-def update_order_status(
-    order_id: int,
-    payload: OrderStatusUpdate,
-    svc: OrderService = Depends(get_order_service),
-):
-    order = svc.update_status(order_id, payload.status)
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
-    return _order_to_read(order)
-
-
-# -- Dashboard --
+# -- Dashboard (legacy stub for admin compatibility) --
 
 @app.get("/api/dashboard/stats")
-def dashboard_stats(svc: OrderService = Depends(get_order_service)):
-    return svc.get_dashboard_stats()
+def dashboard_stats_stub(session: Session = Depends(get_session)):
+    """Stub: returns click analytics for the admin dashboard."""
+    from sqlmodel import select
+    all_events = session.exec(select(ClickEvent)).all()
+    return {"total_clicks": len(all_events), "orders": 0, "revenue": 0}
+
 
 
 # ---------------------------------------------------------------------------

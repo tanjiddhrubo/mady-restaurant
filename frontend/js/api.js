@@ -18,18 +18,16 @@ export async function fetchJSON(path, opts = {}) {
   return res.json();
 }
 
+export const FOODPANDA_URL = "https://foodpanda.go.link/8E4Aw";
+
 export const api = {
   getCategories: () => fetchJSON("/api/categories"),
   getMenu: (categoryId) =>
     fetchJSON(`/api/menu${categoryId ? `?category_id=${categoryId}` : ""}`),
-  createOrder: (payload) =>
-    fetchJSON("/api/orders", { method: "POST", body: JSON.stringify(payload) }),
-  getOrders: () => fetchJSON("/api/orders"),
-  getOrder: (id) => fetchJSON(`/api/orders/${id}`),
-  updateOrderStatus: (id, status) =>
-    fetchJSON(`/api/orders/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
-  getDashboardStats: () => fetchJSON("/api/dashboard/stats"),
+  getDashboardStats: () => fetchJSON("/api/analytics/clicks"),
+  trackClick: (itemId = null) =>
+    fetchJSON("/api/analytics/track", {
+      method: "POST",
+      body: JSON.stringify({ item_id: itemId }),
+    }).catch(() => null), // Non-critical, swallow errors
 };

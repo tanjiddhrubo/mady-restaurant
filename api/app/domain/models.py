@@ -51,9 +51,21 @@ class MenuItem(SQLModel, table=True):
     is_available: bool = Field(default=True)
     is_featured: bool = Field(default=False)
     category_id: Optional[int] = Field(default=None, foreign_key="category.id")
+    foodpanda_url: str = Field(default="")  # Per-item FoodPanda link; falls back to main if empty
 
     category: Optional[Category] = Relationship(back_populates="items")
     order_items: list["OrderItem"] = Relationship(back_populates="menu_item")
+
+
+# ---------------------------------------------------------------------------
+# Click Event (Analytics)
+# ---------------------------------------------------------------------------
+
+class ClickEvent(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    item_id: Optional[int] = Field(default=None)  # None = main shop click
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 
 
 # ---------------------------------------------------------------------------

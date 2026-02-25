@@ -1,9 +1,8 @@
 /**
  * Menu page logic — loads categories & items from the API,
- * renders food cards, and wires up "Add to Cart" buttons.
+ * renders food cards, and redirects to FoodPanda on order.
  */
-import { api } from './api.js';
-import { addItem, updateCartBadge } from './cart.js';
+import { api, FOODPANDA_URL } from './api.js';
 
 let selectedCategoryId = null;
 
@@ -60,22 +59,20 @@ async function loadMenuItems() {
     return;
   }
 
-  grid.innerHTML = items.map(renderFoodCard).join('');
+  grid.innerHTML = items.filter(i => i.is_available).map(renderFoodCard).join('');
 
-  grid.querySelectorAll('[data-add-to-cart]').forEach((btn) => {
+  grid.querySelectorAll('[data-foodpanda-url]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const id    = Number(btn.dataset.addToCart);
-      const name  = btn.dataset.name;
-      const price = Number(btn.dataset.price);
-      const img   = btn.dataset.img;
-      addItem({ id, name, price, image_url: img });
-      updateCartBadge();
-      showToast(`${name} added to cart!`);
+      const itemId = btn.dataset.itemId ? Number(btn.dataset.itemId) : null;
+      const url = btn.dataset.foodpandaUrl || FOODPANDA_URL;
+      api.trackClick(itemId);
+      window.open(url, '_blank');
     });
   });
 }
 
 function renderFoodCard(item) {
+  const fpUrl = item.foodpanda_url || FOODPANDA_URL;
   return `
     <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
       <div class="h-48 w-full bg-cover bg-center"
@@ -86,25 +83,15 @@ function renderFoodCard(item) {
           <span class="text-primary font-bold">৳${item.price.toFixed(2)}</span>
         </div>
         <p class="text-slate-500 text-sm mb-4 line-clamp-2">${item.description}</p>
-        <button class="mt-auto w-full bg-secondary hover:bg-secondary/90 text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-          data-add-to-cart="${item.id}"
-          data-name="${item.name}"
-          data-price="${item.price}"
-          data-img="${item.image_url}">
-          <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
-          Add to Cart
+        <button class="mt-auto w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-primary/20"
+          data-foodpanda-url="${fpUrl}"
+          data-item-id="${item.id}"
+          data-name="${item.name}">
+          <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          Order on FoodPanda
         </button>
       </div>
     </div>`;
-}
-
-function showToast(msg) {
-  const toast = document.createElement('div');
-  toast.className =
-    'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-full shadow-lg text-sm font-semibold z-[999] transition-opacity';
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1800);
 }
 
 // Search
@@ -113,7 +100,7 @@ function setupSearch() {
   if (!input) return;
   input.addEventListener('input', () => {
     const q = input.value.toLowerCase();
-    document.querySelectorAll('[data-add-to-cart]').forEach((btn) => {
+    document.querySelectorAll('[data-foodpanda-url]').forEach((btn) => {
       const card = btn.closest('div.bg-white');
       const name = btn.dataset.name.toLowerCase();
       card.style.display = name.includes(q) ? '' : 'none';
@@ -122,7 +109,6 @@ function setupSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  updateCartBadge();
   await loadCategories();
   await loadMenuItems();
   setupSearch();

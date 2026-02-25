@@ -9,12 +9,10 @@
  */
 
 const NAV_LINKS = [
-  { href: "index.html",      icon: "dashboard",   label: "Dashboard" },
-  { href: "orders.html",     icon: "receipt_long", label: "Orders" },
-  { href: "menu.html",       icon: "menu_book",   label: "Menu" },
-  { href: "categories.html", icon: "folder",      label: "Categories" },
-  { href: "analytics.html",  icon: "analytics",   label: "Analytics" },
-  { href: "staff.html",      icon: "group",       label: "Staff" },
+  { href: "/admin/index.html",      icon: "dashboard",   label: "Dashboard" },
+  { href: "/admin/menu.html",       icon: "menu_book",   label: "Menu" },
+  { href: "/admin/categories.html", icon: "folder",      label: "Categories" },
+  { href: "/admin/analytics.html",  icon: "analytics",   label: "Analytics" },
 ];
 
 function currentPage() {

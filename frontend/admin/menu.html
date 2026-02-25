@@ -206,6 +206,11 @@
             </div>
           </div>
 
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">FoodPanda URL <span class="text-slate-300 font-normal normal-case">(optional — leave blank to use main shop link)</span></span>
+            <input name="foodpanda_url" id="add-foodpanda-url" type="url" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium" placeholder="https://foodpanda.go.link/…"/>
+          </div>
+
           <div class="pt-6">
             <button type="submit" id="add-submit-btn" 
                     class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-3xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3">
@@ -308,6 +313,11 @@
           <div class="space-y-2 flex flex-col">
             <span class="text-xs font-black uppercase tracking-widest text-slate-500">Description</span>
             <textarea name="description" id="edit-description" rows="3" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium resize-none"></textarea>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">FoodPanda URL <span class="text-slate-300 font-normal normal-case">(optional)</span></span>
+            <input name="foodpanda_url" id="edit-foodpanda-url" type="url" class="bg-slate-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary transition-all font-medium" placeholder="https://foodpanda.go.link/…"/>
           </div>
 
           <div class="pt-6 flex gap-4">
@@ -688,6 +698,7 @@
       document.getElementById('edit-category-select').value = item.category_id || '';
       document.getElementById('edit-available').checked = item.is_available;
       document.getElementById('edit-featured').checked = item.is_featured;
+      document.getElementById('edit-foodpanda-url').value = item.foodpanda_url || '';
       document.getElementById('edit-item-summary').textContent = `Adjusting details for "${item.name}"`;
 
       if (item.image_url) {
