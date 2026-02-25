@@ -19,23 +19,30 @@ engine = create_engine(
 )
 
 
-# Columns to auto-add if missing (table, column, sql_type_default)
+# Columns to auto-add if missing (table, column, sql_type_and_default)
 _MIGRATIONS = [
     ("menuitem", "foodpanda_url", "TEXT NOT NULL DEFAULT ''"),
 ]
 
 
 def _run_migrations() -> None:
-    """Add missing columns to existing tables (SQLite-safe ALTER TABLE)."""
-    if not settings.DATABASE_URL.startswith("sqlite"):
-        return  # Postgres/Supabase handles schema via create_all
+    """Add missing columns to existing tables — works for both SQLite and Postgres."""
     try:
+        is_sqlite = settings.DATABASE_URL.startswith("sqlite")
         with engine.connect() as conn:
             for table, col, typedef in _MIGRATIONS:
-                rows = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
-                existing = {r[1] for r in rows}
-                if col not in existing:
-                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {typedef}"))
+                if is_sqlite:
+                    # SQLite: check via PRAGMA
+                    rows = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
+                    existing = {r[1] for r in rows}
+                    if col not in existing:
+                        conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {typedef}"))
+                        conn.commit()
+                else:
+                    # Postgres: use IF NOT EXISTS (supported since Postgres 9.6)
+                    conn.execute(text(
+                        f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {typedef}"
+                    ))
                     conn.commit()
     except Exception as e:
         print(f"Migration warning: {e}")
