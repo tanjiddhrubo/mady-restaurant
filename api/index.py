@@ -7,9 +7,12 @@ if root_path not in sys.path:
     sys.path.insert(0, root_path)
 
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 import uuid
+
+import jwt as _jwt
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -238,6 +241,36 @@ def debug_info():
         "python_version": sys.version,
         "sys_path": sys.path
     }
+
+
+# -- Auth --
+
+_JWT_SECRET  = os.environ.get("JWT_SECRET", "dev-secret-CHANGE-ME")
+_ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@mady.com")
+_ADMIN_PASS  = os.environ.get("ADMIN_PASSWORD", "changeme")
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/login")
+def admin_login(req: LoginRequest):
+    """Validate admin credentials and return a signed JWT (12 h)."""
+    if req.email.lower() != _ADMIN_EMAIL.lower() or req.password != _ADMIN_PASS:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    token = _jwt.encode(
+        {
+            "sub": req.email,
+            "role": "admin",
+            "iat": datetime.utcnow(),
+            "exp": datetime.utcnow() + timedelta(hours=12),
+        },
+        _JWT_SECRET,
+        algorithm="HS256",
+    )
+    return {"token": token}
 
 
 # -- Image upload --

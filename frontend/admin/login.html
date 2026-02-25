@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — Mady Restaurant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ea2a33", secondary: "#facc15" }, fontFamily: { sans: ["Plus Jakarta Sans", "sans-serif"] } } }
+    };
+  </script>
+  <style>
+    body { font-family: "Plus Jakarta Sans", sans-serif; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation: fadeUp .5s ease both; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+
+  <!-- Background decorations -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative w-full max-w-sm fade-up">
+    <!-- Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+
+      <!-- Logo + heading -->
+      <div class="flex flex-col items-center mb-8 gap-3">
+        <img src="/assets/images/mady_logo.jpeg" alt="Mady Restaurant"
+             class="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700 shadow-lg"/>
+        <div class="text-center">
+          <h1 class="text-white text-2xl font-black">Admin Portal</h1>
+          <p class="text-slate-400 text-sm mt-1">Sign in to manage your restaurant</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="login-form" class="space-y-4" novalidate>
+
+        <div class="space-y-1">
+          <label for="email" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Email</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[20px]">mail</span>
+            <input id="email" type="email" autocomplete="email" required
+                   placeholder="admin@mady.com"
+                   class="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"/>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="password" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[20px]">lock</span>
+            <input id="password" type="password" autocomplete="current-password" required
+                   placeholder="••••••••"
+                   class="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-xl pl-10 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"/>
+            <button type="button" id="toggle-pw"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+              <span class="material-symbols-outlined text-[20px]" id="pw-icon">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error alert -->
+        <div id="error-box" class="hidden bg-primary/10 border border-primary/30 text-primary text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] shrink-0">error</span>
+          <span id="error-msg">Invalid email or password.</span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="submit-btn"
+                class="w-full bg-primary hover:bg-primary/90 text-white font-black py-3.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-2">
+          <span id="btn-label">Sign In</span>
+          <span id="btn-spinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        </button>
+      </form>
+
+      <p class="text-center text-slate-600 text-xs mt-6">
+        Mady Restaurant Admin · Access restricted
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { login, getToken } from '/js/admin/auth.js';
+
+    // Already logged in → go to dashboard
+    if (getToken()) window.location.replace('/admin/index.html');
+
+    const form     = document.getElementById('login-form');
+    const errorBox = document.getElementById('error-box');
+    const errorMsg = document.getElementById('error-msg');
+    const btnLabel  = document.getElementById('btn-label');
+    const btnSpin   = document.getElementById('btn-spinner');
+    const submitBtn = document.getElementById('submit-btn');
+    const pwInput   = document.getElementById('password');
+    const pwIcon    = document.getElementById('pw-icon');
+
+    // Toggle password visibility
+    document.getElementById('toggle-pw').addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwIcon.textContent = show ? 'visibility_off' : 'visibility';
+    });
+
+    function setLoading(on) {
+      submitBtn.disabled = on;
+      btnLabel.textContent = on ? 'Signing in…' : 'Sign In';
+      btnSpin.classList.toggle('hidden', !on);
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorBox.classList.remove('hidden');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.classList.add('hidden');
+      const email    = document.getElementById('email').value.trim();
+      const password = pwInput.value;
+      if (!email || !password) { showError('Please enter your email and password.'); return; }
+      setLoading(true);
+      try {
+        await login(email, password);
+        window.location.replace('/admin/index.html');
+      } catch (err) {
+        showError(err.message || 'Invalid email or password.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>

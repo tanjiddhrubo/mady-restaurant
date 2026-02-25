@@ -1,7 +1,16 @@
 /**
  * Shared Admin Sidebar — inject on every admin page.
- * Supports mobile: hamburger button toggles a slide-in drawer.
+ * • Auth guard: redirects to /admin/login.html if no token.
+ * • Mobile: hamburger button toggles a slide-in drawer.
  */
+import { requireAuth, logout } from '/js/admin/auth.js';
+
+// ── Auth guard (runs before anything renders) ───────────────────────────────
+if (!requireAuth()) {
+  // requireAuth already called window.location.replace — stop execution
+  throw new Error("Redirecting to login…");
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
   { href: "/admin/index.html",      icon: "dashboard",   label: "Dashboard" },
@@ -67,13 +76,16 @@ function renderSidebar() {
 
       <!-- User footer -->
       <div class="p-4 border-t border-slate-100">
-        <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+        <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
           <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">A</div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold truncate">Alex Mady</p>
-            <p class="text-xs text-slate-400 truncate">Admin Manager</p>
+            <p class="text-sm font-semibold truncate">Admin</p>
+            <p class="text-xs text-slate-400 truncate">Mady Restaurant</p>
           </div>
-          <span class="material-symbols-outlined text-slate-300 text-sm">logout</span>
+          <button id="logout-btn" title="Log out"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-slate-400 text-[20px]">logout</span>
+          </button>
         </div>
         <a href="/" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-500 hover:text-primary transition-colors mt-1">
           <span class="material-symbols-outlined text-sm">storefront</span> View Store
@@ -89,12 +101,17 @@ document.addEventListener("DOMContentLoaded", () => {
   root.insertAdjacentHTML("beforebegin", renderSidebar());
   root.remove();
 
-  const sidebar   = document.getElementById("admin-sidebar");
-  const backdrop  = document.getElementById("sidebar-backdrop");
-  const openBtn   = document.getElementById("sidebar-open-btn");
-  const closeBtn  = document.getElementById("sidebar-close-btn");
+  const sidebar  = document.getElementById("admin-sidebar");
+  const backdrop = document.getElementById("sidebar-backdrop");
+  const openBtn  = document.getElementById("sidebar-open-btn");
+  const closeBtn = document.getElementById("sidebar-close-btn");
 
-  // Add top-padding to main on mobile so content isn't behind the topbar
+  // Logout
+  document.getElementById("logout-btn")?.addEventListener("click", () => {
+    if (confirm("Log out of the admin panel?")) logout();
+  });
+
+  // Add top-padding to main on mobile so content isn't behind topbar
   const main = document.querySelector("main");
   if (main) main.classList.add("pt-14", "md:pt-0");
 
@@ -114,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
   closeBtn?.addEventListener("click", closeSidebar);
   backdrop?.addEventListener("click", closeSidebar);
 
-  // Close on nav link tap (mobile)
+  // Close sidebar on nav link tap (mobile UX)
   sidebar?.querySelectorAll("a[href]").forEach(a =>
     a.addEventListener("click", closeSidebar)
   );
