@@ -263,9 +263,32 @@ async def upload_image(file: UploadFile = File(...)):
     suffix = EXT_MAP.get(raw_suffix, ".jpg")
 
     filename = f"{uuid.uuid4().hex}{suffix}"
-    dest = UPLOAD_DIR / filename
-    dest.write_bytes(await file.read())
-    return {"url": f"/static/uploads/{filename}"}
+    content = await file.read()
+
+    supabase_url = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
+
+    if supabase_url and supabase_key:
+        # ── Supabase Storage (Vercel / production) ──────────────────
+        import httpx
+        bucket = "menu-images"
+        storage_url = f"{supabase_url}/storage/v1/object/{bucket}/{filename}"
+        headers = {
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": content_type or "image/jpeg",
+        }
+        async with httpx.AsyncClient(timeout=30) as client:
+            r = await client.post(storage_url, content=content, headers=headers)
+            if r.status_code not in (200, 201):
+                raise HTTPException(status_code=502, detail=f"Supabase Storage error: {r.text}")
+        public_url = f"{supabase_url}/storage/v1/object/public/{bucket}/{filename}"
+        return {"url": public_url}
+    else:
+        # ── Local filesystem fallback ───────────────────────────────
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        dest = UPLOAD_DIR / filename
+        dest.write_bytes(content)
+        return {"url": f"/static/uploads/{filename}"}
 
 
 
