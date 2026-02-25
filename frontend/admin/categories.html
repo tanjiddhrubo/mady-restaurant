@@ -243,7 +243,7 @@
 
 <script type="module" src="../js/admin/sidebar.js"></script>
 <script type="module">
-  const API = 'http://localhost:8000';
+  const API = window.location.origin;
   let categories = [];
   let subcategories = [];
   let pendingDelete = null;
